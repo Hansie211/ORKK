@@ -1,16 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ORKK.Data;
+using System;
 using System.Windows;
 
-namespace ORKK {
+namespace ORKK
+{
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application {
-
+    public partial class App : Application 
+    {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+            DataVault.FillVaults();
+        }
     }
 }
