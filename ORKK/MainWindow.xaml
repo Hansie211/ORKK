@@ -5,8 +5,35 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ORKK"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
+        Title="ORRK" Height="450" Width="800">
+    <Grid Margin="20">
+
+        <Grid.RowDefinitions>
+
+            <!-- Header -->
+            <RowDefinition Height="50" />
+            <!-- Menubar -->
+            <RowDefinition Height="20" />
+            <!-- Content -->
+            <RowDefinition Height="1*" />
+            <!-- Footer -->
+            <RowDefinition Height="50" />
+
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row="0" Content="Over de Rhein Kraan Keuringen" FontSize="20" FontWeight="Bold" />
+        <Label Grid.Row="0" Content="Hoofdscherm" HorizontalAlignment="Right" FontSize="20" FontWeight="Bold" />
+
+        <Menu Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent">
+
+            <MenuItem Header="Bestand" />
+            <MenuItem Header="Info" />
+
+        </Menu>
+
+        <DataGrid Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+
+        <Button Grid.Row="3" Height="25" Width="75" HorizontalAlignment="Right" Content="Einde" />
+
     </Grid>
 </Window>
