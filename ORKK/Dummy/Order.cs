@@ -24,5 +24,9 @@ namespace ORKK.Dummy {
         public BitmapImage signature { get; set; }
         public int company_hour_count { get; set; }
         public string reason { get; set; }
+
+        public override string ToString() {
+            return $"Order {ID}";
+        }
     }
 }

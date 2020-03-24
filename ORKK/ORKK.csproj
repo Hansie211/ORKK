@@ -75,6 +75,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\IsSelectedConverter.cs" />
     <Compile Include="Dummy\Cablechecklist.cs" />
     <Compile Include="Dummy\DataContext.cs" />
     <Compile Include="Dummy\Order.cs" />
