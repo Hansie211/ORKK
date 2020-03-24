@@ -118,7 +118,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="logo.png" />
     <Content Include="Main.mdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
