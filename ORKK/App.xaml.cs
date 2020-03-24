@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ORKK.Data;
+using System;
 using System.Windows;
 
-namespace ORKK {
+namespace ORKK
+{
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
@@ -15,23 +11,8 @@ namespace ORKK {
     {
         protected override void OnStartup(StartupEventArgs e)
         {
-            string connString = @"Data Source=(localdb)\MSSQLLocalDB; AttachDbFilename=D:\VS Projects\ORKK\ORKK\Main.mdf";
-            
-            using (var conn = new SqlConnection(connString))
-            {
-                string sqlString = @"SELECT Work_Instruction, Date_Execution FROM OrderTable";
-                using (var command = new SqlCommand(sqlString, conn))
-                {
-                    conn.Open();
-
-                    SqlDataReader reader = command.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        Console.WriteLine(reader["Work_Instruction"]);
-                        Console.WriteLine(reader["Date_Execution"]);
-                    }
-                }
-            }
+            base.OnStartup(e);
+            DataVault.FillVaults();
         }
     }
 }
