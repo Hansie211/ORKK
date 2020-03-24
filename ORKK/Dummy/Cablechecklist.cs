@@ -14,7 +14,7 @@ namespace ORKK.Dummy {
         zeer_hoog,
     }
 
-    class Cablechecklist {
+    public class Cablechecklist {
 
         private static int _ID = 0;
         public static Cablechecklist Next() {

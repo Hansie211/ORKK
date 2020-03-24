@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ORKK.Dummy;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,9 +19,33 @@ namespace ORKK {
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window {
+
+        public List<Cablechecklist> Checklists { get; set; } = new List<Cablechecklist>();
         public MainWindow() {
+
+            this.DataContext = this;
+
+            Cablechecklist cablechecklist;
+
+            cablechecklist = Cablechecklist.Next();
+            cablechecklist.OrderID = 100;
+            cablechecklist.rupture_6d = 10;
+
+            Checklists.Add( cablechecklist );
+
+            cablechecklist = Cablechecklist.Next();
+            cablechecklist.OrderID = 101;
+            cablechecklist.rupture_6d = 11;
+
+            Checklists.Add( cablechecklist );
 
             InitializeComponent();
         }
+
+        private void CloseWindow_Click( object sender, RoutedEventArgs e ) {
+
+            Close();
+        }
+
     }
 }

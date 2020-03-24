@@ -5,7 +5,63 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ORKK"
         mc:Ignorable="d"
-        Title="ORRK" Height="450" Width="800">
+        Title="ORRK" Height="687" Width="800" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style x:Key="TextBlockHeaderStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="WrapWithOverflow" />
+        </Style>
+
+        <Style x:Key="ListViewItemStyle" TargetType="{x:Type ListViewItem}">
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListViewItem}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="0.5*" />
+                                <ColumnDefinition Width="0.5*" />
+                                <ColumnDefinition Width="1*" />
+                                <ColumnDefinition Width="1*" />
+                                <ColumnDefinition Width="1*" />
+                                <ColumnDefinition Width="1*" />
+                                <ColumnDefinition Width="1*" />
+                                <ColumnDefinition Width="1*" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBox Grid.Column="0" Text="{Binding rupture_6d}" />
+
+                            <TextBox Grid.Column="1" Text="{Binding rupture_30d}"/>
+
+                            <ComboBox Grid.Column="2" SelectedItem="{Binding damage_outside}">
+                                <ComboBoxItem Content="Geen" />
+                                <ComboBoxItem Content="Een beetje"/>
+                                <ComboBoxItem Content="Veel"/>
+                            </ComboBox>
+
+                            <ComboBox Grid.Column="3" SelectedItem="{Binding damage_rust_corrosion}">
+                                <ComboBoxItem Content="Geen" />
+                                <ComboBoxItem Content="Een beetje"/>
+                                <ComboBoxItem Content="Veel"/>
+                            </ComboBox>
+
+                            <TextBox Grid.Column="4" Text="{Binding reduced_cable_diameter}" />
+
+                            <TextBox Grid.Column="5" Text="{Binding position_meassuring_point}" />
+
+                            <ComboBox Grid.Column="6" SelectedItem="{Binding damage_total}">
+                                <ComboBoxItem Content="Geen" />
+                                <ComboBoxItem Content="Een beetje"/>
+                                <ComboBoxItem Content="Veel"/>
+                            </ComboBox>
+
+                            <TextBox Grid.Column="7" Text="{Binding type_damage_corrosion}" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
     <Grid Margin="20">
 
         <Grid.RowDefinitions>
@@ -13,9 +69,13 @@
             <!-- Header -->
             <RowDefinition Height="50" />
             <!-- Menubar -->
-            <RowDefinition Height="20" />
+            <RowDefinition Height="30" />
+            <!-- Contentheader -->
+            <RowDefinition Height="40" />
             <!-- Content -->
             <RowDefinition Height="1*" />
+            <!-- Content Footer -->
+            <RowDefinition Height="100" />
             <!-- Footer -->
             <RowDefinition Height="50" />
 
@@ -24,20 +84,49 @@
         <Label Grid.Row="0" Content="Over de Rhein Kraan Keuringen" FontSize="20" FontWeight="Bold" />
         <Label Grid.Row="0" Content="Hoofdscherm" HorizontalAlignment="Right" FontSize="20" FontWeight="Bold" />
 
-        <Menu Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent">
+        <Border Grid.Row="1" HorizontalAlignment="Stretch" BorderBrush="Black" BorderThickness="0,0,0,2" VerticalAlignment="Top">
+            <Menu VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent">
 
-            <MenuItem Header="Bestand" />
-            <MenuItem Header="Info" />
+                <MenuItem Header="Bestand">
 
-        </Menu>
+                    <MenuItem Header="Nieuwe order"/>
+                    <MenuItem Header="Order selecteren">
+                        <MenuItem Header="Order 1" />
+                        <MenuItem Header="Order 2" />
+                    </MenuItem>
+                    <Separator />
 
-        <Grid Grid.Row="2">
+                    <MenuItem Header="Nieuwe checklist"/>
+                    <Separator />
+
+                    <MenuItem Header="Opslaan"/>
+                    <Separator/>
+
+                    <MenuItem Header="Afsluiten" Click="CloseWindow_Click"/>
+                </MenuItem>
+                <MenuItem Header="Info" />
+
+            </Menu>
+        </Border>
+
+        <Grid Grid.Row="2" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal" Height="23">
+                <TextBlock Text="Opdrachtnummer" Margin="0,0,10,0" />
+                <TextBox Width="75" Text="1" IsReadOnly="True" />
+            </StackPanel>
+
+        </Grid>
+
+        <Grid Grid.Row="3">
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="0.5*" />
+                <ColumnDefinition Width="0.5*" />
                 <ColumnDefinition Width="1*" />
                 <ColumnDefinition Width="1*" />
                 <ColumnDefinition Width="1*" />
@@ -52,22 +141,67 @@
                 <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
 
-            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Content="Zichtbare draadbreuk" />
-            <Label Grid.Row="1" Grid.Column="0" Content="6D" />
-            <Label Grid.Row="1" Grid.Column="1" Content="30D" />
+            <TextBlock Style="{StaticResource TextBlockHeaderStyle}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="Zichtbare draadbreuk" />
+            <TextBlock Style="{StaticResource TextBlockHeaderStyle}" Grid.Row="1" Grid.Column="0" Grid.RowSpan="1" Text="6D" />
+            <TextBlock Style="{StaticResource TextBlockHeaderStyle}" Grid.Row="1" Grid.Column="1" Grid.RowSpan="1" Text="30D" />
 
-            <Label Grid.Row="0" Grid.Column="2" Content="Afslijping" />
-            <Label Grid.Row="1" Grid.Column="2" Content="Mate van beschadiging" />
+            <TextBlock Style="{StaticResource TextBlockHeaderStyle}" Grid.Row="0" Grid.Column="2" Grid.RowSpan="1" Text="Afslijping" />
+            <TextBlock Style="{StaticResource TextBlockHeaderStyle}" Grid.Row="1" Grid.Column="2" Grid.RowSpan="1" Text="Mate van beschadiging" />
 
-            <Label Grid.Row="0" Grid.Column="3" Content="Verminderde kabeldiameter" />
-            <Label Grid.Row="1" Grid.Column="3" Content="%" />
+            <TextBlock Style="{StaticResource TextBlockHeaderStyle}" Grid.Row="0" Grid.Column="3" Grid.RowSpan="1" Text="Roest en corrosie" />
+            <TextBlock Style="{StaticResource TextBlockHeaderStyle}" Grid.Row="1" Grid.Column="3" Grid.RowSpan="1" Text="Mate van beschadiging" />
 
-            <Label Grid.Row="0" Grid.Column="3" Grid.RowSpan="2" Content="Verminderde kabeldiameter" />
+            <TextBlock Style="{StaticResource TextBlockHeaderStyle}" Grid.Row="0" Grid.Column="4" Grid.RowSpan="1" Text="Verminderde kabeldiameter" />
+            <TextBlock Style="{StaticResource TextBlockHeaderStyle}" Grid.Row="1" Grid.Column="4" Grid.RowSpan="1" Text="%" />
 
+            <TextBlock Style="{StaticResource TextBlockHeaderStyle}" Grid.Row="0" Grid.Column="5" Grid.RowSpan="1" Text="Positie meetpunt" />
+
+            <TextBlock Style="{StaticResource TextBlockHeaderStyle}" Grid.Row="0" Grid.Column="6" Grid.RowSpan="1" Text="Totale beoordeling" />
+            <TextBlock Style="{StaticResource TextBlockHeaderStyle}" Grid.Row="1" Grid.Column="6" Grid.RowSpan="1" Text="Mate van beschadiging" />
+
+            <TextBlock Style="{StaticResource TextBlockHeaderStyle}" Grid.Row="0" Grid.Column="7" Grid.RowSpan="1" Text="Beschadiging en vervorming" />
+            <TextBlock Style="{StaticResource TextBlockHeaderStyle}" Grid.Row="1" Grid.Column="7" Grid.RowSpan="1" Text="Type" />
+
+            <ListView Grid.Row="2" Grid.ColumnSpan="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemContainerStyle="{DynamicResource ListViewItemStyle}" ItemsSource="{Binding Checklists}" />
 
         </Grid>
 
-        <Button Grid.Row="3" Height="25" Width="75" HorizontalAlignment="Right" Content="Einde" />
+        <Grid Grid.Row="4">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="20" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Datum:" />
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Kabelleverancier:" />
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Overige waarnemingen:" TextWrapping="WrapWithOverflow" />
+
+            <TextBlock Grid.Row="0" Grid.Column="2" Text="Handtekening:" />
+            <TextBlock Grid.Row="1" Grid.Column="2" Text="Aantal bedrijfsuren:" />
+            <TextBlock Grid.Row="2" Grid.Column="2" Text="Redenen voor het afleggen:" TextWrapping="WrapWithOverflow" />
+
+            <DatePicker Grid.Row="0" Grid.Column="1" />
+            <TextBox Grid.Row="1" Grid.Column="1"  />
+            <TextBox Grid.Row="2" Grid.Column="1" AcceptsReturn="True" TextWrapping="Wrap"/>
+
+            <Border Grid.Row="0" Grid.Column="3" BorderThickness="1" BorderBrush="#FFABADB3">
+                <Canvas />
+            </Border>
+            <TextBox Grid.Row="1" Grid.Column="3" />
+            <TextBox Grid.Row="2" Grid.Column="3" AcceptsReturn="True" TextWrapping="Wrap"/>
+
+        </Grid>
+
+        <Button Grid.Row="5" Height="25" Width="75" HorizontalAlignment="Right" Content="Einde" Click="CloseWindow_Click" />
 
     </Grid>
 </Window>

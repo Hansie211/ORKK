@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
 namespace ORKK.Dummy {
-    class Order {
+    public class Order {
 
         private static int _ID = 0;
 
