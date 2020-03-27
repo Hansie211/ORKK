@@ -1,4 +1,4 @@
-﻿using ORKK.Dummy;
+﻿using ORKK.Data;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -11,8 +11,10 @@ namespace ORKK.Converters {
     class IsSelectedConverter : IValueConverter {
         public object Convert( object value, Type targetType, object parameter, CultureInfo culture ) {
 
+            return false;
+
             MainWindow mw = (MainWindow)App.Current.MainWindow;
-            return ( (Order)value ).ID == mw.ActiveOrder.ID;
+            return ( (OrderObject)value ).ID == mw.ActiveOrder.ID;
             //throw new NotImplementedException();
         }
 

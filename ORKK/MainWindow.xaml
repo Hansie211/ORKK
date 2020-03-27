@@ -21,7 +21,8 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ListViewItem}">
-                        <Border BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="Black">
+                        <!--{TemplateBinding BorderThickness}-->
+                        <Border BorderThickness="0" BorderBrush="Black">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="0.5*" />
@@ -34,33 +35,22 @@
                                     <ColumnDefinition Width="1*" />
                                 </Grid.ColumnDefinitions>
 
-                                <TextBox Grid.Column="0" Text="{Binding rupture_6d}" />
+                                <TextBox Grid.Column="0" Text="{Binding Rupture6D}" />
 
-                                <TextBox Grid.Column="1" Text="{Binding rupture_30d}"/>
+                                <TextBox Grid.Column="1" Text="{Binding Rupture30D}"/>
 
-                                <ComboBox Grid.Column="2" SelectedItem="{Binding damage_outside}">
-                                    <ComboBoxItem Content="Geen" />
-                                    <ComboBoxItem Content="Een beetje"/>
-                                    <ComboBoxItem Content="Veel"/>
-                                </ComboBox>
+                                <ComboBox Grid.Column="2" SelectedItem="{Binding DamageOutside}" ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DamageTypes}" />
 
-                                <ComboBox Grid.Column="3" SelectedItem="{Binding damage_rust_corrosion}">
-                                    <ComboBoxItem Content="Geen" />
-                                    <ComboBoxItem Content="Een beetje"/>
-                                    <ComboBoxItem Content="Veel"/>
-                                </ComboBox>
+                                <ComboBox Grid.Column="3" SelectedItem="{Binding DamageRustCorrosion}" ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DamageTypes}" />
 
-                                <TextBox Grid.Column="4" Text="{Binding reduced_cable_diameter}" />
+                                <TextBox Grid.Column="4" Text="{Binding ReducedCableDiameter}" />
 
-                                <TextBox Grid.Column="5" Text="{Binding position_meassuring_point}" />
+                                <TextBox Grid.Column="5" Text="{Binding PositionMeasuringPoints}" />
 
-                                <ComboBox Grid.Column="6" SelectedItem="{Binding damage_total}">
-                                    <ComboBoxItem Content="Geen" />
-                                    <ComboBoxItem Content="Een beetje"/>
-                                    <ComboBoxItem Content="Veel"/>
-                                </ComboBox>
+                                <ComboBox Grid.Column="6" SelectedItem="{Binding TotalDamages}" ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DamageTypes}" />
 
-                                <TextBox Grid.Column="7" Text="{Binding type_damage_corrosion}" />
+
+                                <TextBox Grid.Column="7" Text="{Binding TypeDamageRust}" />
                             </Grid>
                         </Border>
                     </ControlTemplate>
@@ -139,7 +129,7 @@
 
             <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal" Height="23">
                 <TextBlock Text="Opdrachtnummer" Margin="0,0,10,0" />
-                <TextBox Width="75" Text="1" IsReadOnly="True" />
+                <TextBox Width="75" IsReadOnly="True" Height="23" VerticalAlignment="Top" Text="{Binding ActiveOrder.ID}" />
             </StackPanel>
 
         </Grid>
@@ -211,15 +201,15 @@
             <TextBlock Grid.Row="1" Grid.Column="2" Text="Aantal bedrijfsuren:" />
             <TextBlock Grid.Row="2" Grid.Column="2" Text="Redenen voor het afleggen:" TextWrapping="WrapWithOverflow" />
 
-            <DatePickerTextBox Grid.Row="0" Grid.Column="1" Text="{Binding ActiveOrder.date_execution}" />
-            <TextBox Grid.Row="1" Grid.Column="1"  />
-            <TextBox Grid.Row="2" Grid.Column="1" AcceptsReturn="True" TextWrapping="Wrap"/>
+            <DatePickerTextBox Grid.Row="0" Grid.Column="1" Text="{Binding ActiveOrder.DateExecution}" />
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ActiveOrder.CableSupplier}"  />
+            <TextBox Grid.Row="2" Grid.Column="1" AcceptsReturn="True" TextWrapping="Wrap" Text="{Binding ActiveOrder.Observations}"/>
 
             <Border Grid.Row="0" Grid.Column="3" BorderThickness="1" BorderBrush="#FFABADB3">
                 <Canvas />
             </Border>
-            <TextBox Grid.Row="1" Grid.Column="3" />
-            <TextBox Grid.Row="2" Grid.Column="3" AcceptsReturn="True" TextWrapping="Wrap"/>
+            <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding ActiveOrder.HoursInCompany}" />
+            <TextBox Grid.Row="2" Grid.Column="3" AcceptsReturn="True" TextWrapping="Wrap" Text="{Binding ActiveOrder.Reasons}"/>
 
         </Grid>
 

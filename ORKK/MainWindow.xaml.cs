@@ -1,4 +1,4 @@
-﻿using ORKK.Dummy;
+﻿using ORKK.Data;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -32,30 +32,34 @@ namespace ORKK {
             PropertyChanged.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
         }
 
-        private ICollection<Cablechecklist> _Checklists = new ObservableCollection<Cablechecklist>();
-        public ICollection<Cablechecklist> Checklists {
-            get { return _Checklists; }
-            set {
-                _Checklists = value;
-                OnPropertyChanged( "Checklists" );
+        //private ICollection<Cablechecklist> _Checklists = new ObservableCollection<Cablechecklist>();
+        public IEnumerable<CableChecklistObject> Checklists {
+            get {
+
+                if ( ActiveOrder == null ) {
+                    return null;
+                }
+
+                return DataVault.GetChildCableChecklists( ActiveOrder.ID );
             }
         }
 
-        private ICollection<Order> _OrderList = new ObservableCollection<Order>();
-        public ICollection<Order> OrderList {
-            get { return _OrderList; }
-            set {
-                _OrderList = value;
-                OnPropertyChanged( "OrderList" );
-            }
+        public ICollection<OrderObject> OrderList {
+            get => OrderVault.GetOrders();
         }
 
-        private Order _ActiveOrder = null;
-        public Order ActiveOrder {
+        private OrderObject _ActiveOrder = null;
+        public OrderObject ActiveOrder {
             get { return _ActiveOrder; }
             set {
                 _ActiveOrder = value;
                 OnPropertyChanged( "ActiveOrder" );
+            }
+        }
+
+        public IList<Damage> DamageTypes {
+            get {
+                return Enum.GetValues( typeof( Damage ) ).Cast<Damage>().ToArray();
             }
         }
 
@@ -64,24 +68,7 @@ namespace ORKK {
         public MainWindow() {
 
             this.DataContext = this;
-
-            Cablechecklist cablechecklist;
-
-            cablechecklist = Cablechecklist.Next();
-            cablechecklist.OrderID      = 100;
-            cablechecklist.rupture_6d   = 10;
-
-            Checklists.Add( cablechecklist );
-
-            cablechecklist = Cablechecklist.Next();
-            cablechecklist.OrderID      = 101;
-            cablechecklist.rupture_6d   = 11;
-
-            Checklists.Add( cablechecklist );
-
             InitializeComponent();
-
-
         }
 
         private void CloseWindow_Click( object sender, RoutedEventArgs e ) {
@@ -92,7 +79,7 @@ namespace ORKK {
         private void NewChecklist_Click( object sender, RoutedEventArgs e ) {
 
 
-            Checklists.Add( new Cablechecklist() );
+            //Checklists.Add( new Cablechecklist() );
         }
 
         private void DeleteChecklist_Click( object sender, RoutedEventArgs e ) {
@@ -103,18 +90,19 @@ namespace ORKK {
 
         private void NewOrder_Click( object sender, RoutedEventArgs e ) {
 
-            ActiveOrder = new Order() { ID = x++, comment = "comment" };
+            //ActiveOrder = new OrderObject() { ID = x++, comment = "comment" };
 
-            OrderList.Add( ActiveOrder );
-            OnPropertyChanged( "AnyOrders" );
+            //OrderList.Add( ActiveOrder );
+            //OnPropertyChanged( "AnyOrders" );
         }
 
         private void SelectOrder_Click( object sender, RoutedEventArgs e ) {
 
-            Order order = (Order)((MenuItem)sender).Header;
-            Console.WriteLine( order );
+            OrderObject order = (OrderObject)((MenuItem)sender).Header;
 
-            OnPropertyChanged( "OrderList" );
+            ActiveOrder = order;
+            OnPropertyChanged( "ActiveOrder" );
+            OnPropertyChanged( "Checklists" );
         }
 
         private void DeleteOrder_Click( object sender, RoutedEventArgs e ) {
