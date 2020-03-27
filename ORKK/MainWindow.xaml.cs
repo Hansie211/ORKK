@@ -101,7 +101,6 @@ namespace ORKK {
 
             ChecklistList = new ObservableCollection<CableChecklistObject>( DataVault.GetChildCableChecklists( ActiveOrder.ID ) );
             OnPropertyChanged( "OrderList" );
-
         }
 
         private void CloseWindow_Click( object sender, RoutedEventArgs e ) {
@@ -110,6 +109,11 @@ namespace ORKK {
         }
 
         private void NewChecklist_Click( object sender, RoutedEventArgs e ) {
+
+            if ( ActiveOrder == null ) {
+
+                return;
+            }
 
             ChecklistList.Add( new CableChecklistObject( -1, 0, 0, 0, 0, 0, 0, 0, 0, 0 ) );
             OnPropertyChanged( "ChecklistList" );
@@ -122,7 +126,13 @@ namespace ORKK {
 
         private void NewOrder_Click( object sender, RoutedEventArgs e ) {
 
-            OrderList.Add( new OrderObject( -1, null, DateTime.Now, null, null, null, 0, null ) );
+            OrderObject newOrder = new OrderObject( -1, null, DateTime.Now, null, null, null, 0, null );
+            OrderList.Add( newOrder );
+
+            if ( ActiveOrder == null ) {
+
+                SelectNewOrder( newOrder );
+            }
 
             OnPropertyChanged( "OrderList" );
             OnPropertyChanged( "AnyOrders" );
@@ -150,5 +160,17 @@ namespace ORKK {
 
         }
 
+        private void Canvas_ManipulationStarted( object sender, ManipulationStartedEventArgs e ) {
+
+            Canvas canvas = (Canvas)sender;
+
+            Ellipse el = new Ellipse();
+            el.Width = 10;
+            el.Height = 10;
+            el.Fill = new SolidColorBrush( Colors.Red );
+            Canvas.SetLeft( el, e.ManipulationOrigin.X );
+            Canvas.SetTop( el, e.ManipulationOrigin.Y );
+            canvas.Children.Add( el );
+        }
     }
 }

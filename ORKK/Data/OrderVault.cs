@@ -29,15 +29,21 @@ namespace ORKK.Data {
                 string orderString = @"SELECT * FROM OrderTable";
                 using ( var command = new SqlCommand( orderString, conn ) ) {
                     conn.Open();
-                    SqlDataReader reader = command.ExecuteReader();
-                    while ( reader.Read() ) {
 
-                        OrderObject orderObject = new OrderObject(reader.GetInt32(0), reader.GetString(1),
+                    SqlDataReader reader = command.ExecuteReader();
+                    try {
+                        while ( reader.Read() ) {
+
+                            OrderObject orderObject = new OrderObject(reader.GetInt32(0), reader.GetString(1),
                                                                   reader.GetDateTime(2), reader.GetString(3),
                                                                   reader.GetString(4), reader[5], reader.GetInt32(6),
                                                                   reader.GetString(7));
 
-                        Orders.Add( orderObject );
+                            Orders.Add( orderObject );
+                        }
+
+                    } finally {
+                        reader.Close();
                     }
                 }
             }
