@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.SqlClient;
 using System.IO;
@@ -61,15 +60,22 @@ namespace ORKK.Data
     public class OrderObject
     {
         public int ID { get; set; }
+
         public string WorkInstruction { get; set; }
+
         public DateTime DateExecution { get; set; }
+
         public string CableSupplier { get; set; }
+
         public string Observations { get; set; }
+
         public object Image { get; set; }
+
         public int HoursInCompany { get; set; }
+
         public string Reasons { get; set; }
 
-        private List<CableChecklistObject> CableChecklists;
+        private ObservableCollection<CableChecklistObject> CableChecklists;
 
         public OrderObject(int id, string workInstruction, DateTime dateExecution, string cableSupplier, string observations, object image, int hoursInCompany, string reasons)
         {
@@ -81,10 +87,10 @@ namespace ORKK.Data
             Image = image;
             HoursInCompany = hoursInCompany;
             Reasons = reasons;
-            CableChecklists = new List<CableChecklistObject>();
+            CableChecklists = new ObservableCollection<CableChecklistObject>();
         }
 
-        public List<CableChecklistObject> GetCableChecklists()
+        public ObservableCollection<CableChecklistObject> GetCableChecklists()
         {
             return CableChecklists;
         }

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Data.SqlClient;
 using System.Linq;
 
@@ -33,7 +32,6 @@ namespace ORKK.Data
 
         public static void FillVault()
         {
-
             string connString = $@"Data Source=(localdb)\MSSQLLocalDB; AttachDbFilename={ System.IO.Path.GetFullPath($@"{System.AppDomain.CurrentDomain.BaseDirectory}..\..\Main.mdf") }";
             using (var conn = new SqlConnection(connString))
             {
@@ -67,14 +65,23 @@ namespace ORKK.Data
     public class CableChecklistObject
     {
         public int ID { get; set; }
+
         public int OrderID { get; set; }
+
         public int Rupture6D { get; set; }
+
         public int Rupture30D { get; set; }
+
         public Damage DamageOutside { get; set; }
+
         public Damage DamageRustCorrosion { get; set; }
+
         public int ReducedCableDiameter { get; set; }
+
         public int PositionMeasuringPoints { get; set; }
+
         public Damage TotalDamages { get; set; }
+
         public int TypeDamageRust { get; set; }
 
         public CableChecklistObject(int id, int orderId, int rupture6D, int rupture30D, int damageOutside, int damageRustCorrosion, int reducedCableDiamater, int positionMeasuringPoints, int totalDamages, int typeDamageRust)
