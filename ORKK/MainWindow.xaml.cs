@@ -44,7 +44,7 @@ namespace ORKK {
             }
         }
 
-        private List<OrderObject> _OrderList;
+        private ObservableCollection<OrderObject> _OrderList;
         public ICollection<OrderObject> OrderList {
             get { return _OrderList; }
             set { return; }
@@ -70,7 +70,7 @@ namespace ORKK {
 
         public MainWindow() {
 
-            _OrderList = new List<OrderObject>( OrderVault.GetOrders() );
+            _OrderList = new ObservableCollection<OrderObject>( OrderVault.GetOrders() );
 
             this.DataContext = this;
             InitializeComponent();

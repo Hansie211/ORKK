@@ -92,7 +92,7 @@
                 <MenuItem Header="Bestand">
 
                     <MenuItem Header="Nieuwe order" Click="NewOrder_Click"/>
-                    <MenuItem Header="Order selecteren" ItemsSource="{Binding OrderList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding AnyOrders}">
+                    <MenuItem x:Name="menutest" Header="Order selecteren" ItemsSource="{Binding OrderList}" IsEnabled="{Binding AnyOrders}">
                         <MenuItem.ItemContainerStyle>
                             <Style TargetType="MenuItem">
                                 <EventSetter Event="Click" Handler="SelectOrder_Click"/>
