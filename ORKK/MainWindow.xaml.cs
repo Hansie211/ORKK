@@ -25,6 +25,7 @@ namespace ORKK
     {
 
         public event PropertyChangedEventHandler PropertyChanged;
+
         protected void OnPropertyChanged(string propertyName = null)
         {
             if (PropertyChanged == null)
@@ -35,8 +36,7 @@ namespace ORKK
             PropertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        //private ICollection<Cablechecklist> _Checklists = new ObservableCollection<Cablechecklist>();
-        public IEnumerable<CableChecklistObject> Checklists
+        public ObservableCollection<CableChecklistObject> Checklists
         {
             get
             {
@@ -48,6 +48,8 @@ namespace ORKK
                 return DataVault.GetChildCableChecklists(ActiveOrder.ID);
             }
         }
+
+        public CableChecklistObject SelectedChecklist;
 
         public ObservableCollection<OrderObject> OrderList
         {
@@ -63,6 +65,7 @@ namespace ORKK
             {
                 _ActiveOrder = value;
                 OnPropertyChanged("ActiveOrder");
+                OnPropertyChanged("Checklists");
             }
         }
 
@@ -95,15 +98,25 @@ namespace ORKK
 
         private void NewChecklist_Click(object sender, RoutedEventArgs e)
         {
-            //Checklists.Add( new Cablechecklist() );
+            if (ActiveOrder is null)
+            {
+                return;
+            }
+
+            CableChecklistObject checklist = new CableChecklistObject(cableID, ActiveOrder.ID, 0, 0, 0, 0, 0, 0, 0, 0);
+            cableID++;
+            CableChecklistVault.AddCableChecklist(checklist);
+            OnPropertyChanged("Checklists");
         }
 
         private void DeleteChecklist_Click(object sender, RoutedEventArgs e)
         {
-
+            CableChecklistVault.RemoveCableChecklist(SelectedChecklist.ID);
+            OnPropertyChanged("Checklists");
         }
 
         int orderID = 15;
+        int cableID = 20;
 
         private void NewOrder_Click(object sender, RoutedEventArgs e)
         {
@@ -117,7 +130,6 @@ namespace ORKK
         {
             OrderObject order = (OrderObject)((MenuItem)sender).Header;
             ActiveOrder = order;
-            OnPropertyChanged("Checklists");
         }
 
         private void DeleteOrder_Click(object sender, RoutedEventArgs e)
