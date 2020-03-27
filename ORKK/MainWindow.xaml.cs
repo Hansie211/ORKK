@@ -43,6 +43,14 @@ namespace ORKK {
 
         public ObservableCollection<OrderObject> OrderList { get; } = new ObservableCollection<OrderObject>( OrderVault.GetOrders() );
 
+        private CableChecklistObject _ActiveChecklistItem = null;
+        public CableChecklistObject ActiveChecklistItem {
+            get { return _ActiveChecklistItem; }
+            set {
+                _ActiveChecklistItem = value;
+                OnPropertyChanged( "ActiveChecklistItem" );
+            }
+        }
 
         private OrderObject _ActiveOrder = null;
         public OrderObject ActiveOrder {
