@@ -32,7 +32,7 @@ namespace ORKK {
             PropertyChanged.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
         }
 
-        //private ICollection<Cablechecklist> _Checklists = new ObservableCollection<Cablechecklist>();
+
         public IEnumerable<CableChecklistObject> Checklists {
             get {
 
@@ -44,9 +44,12 @@ namespace ORKK {
             }
         }
 
+        private List<OrderObject> _OrderList;
         public ICollection<OrderObject> OrderList {
-            get => OrderVault.GetOrders();
+            get { return _OrderList; }
+            set { return; }
         }
+
 
         private OrderObject _ActiveOrder = null;
         public OrderObject ActiveOrder {
@@ -67,6 +70,8 @@ namespace ORKK {
 
         public MainWindow() {
 
+            _OrderList = new List<OrderObject>( OrderVault.GetOrders() );
+
             this.DataContext = this;
             InitializeComponent();
         }
@@ -86,23 +91,24 @@ namespace ORKK {
 
         }
 
-        int x = 0;
+        int x = 100;
 
         private void NewOrder_Click( object sender, RoutedEventArgs e ) {
 
-            //ActiveOrder = new OrderObject() { ID = x++, comment = "comment" };
+            _OrderList.Add( new OrderObject( x++, null, DateTime.MinValue, null, null, null, 0, null ) );
 
-            //OrderList.Add( ActiveOrder );
-            //OnPropertyChanged( "AnyOrders" );
+            OnPropertyChanged( "OrderList" );
+            // OnPropertyChanged( "AnyOrders" );
         }
 
         private void SelectOrder_Click( object sender, RoutedEventArgs e ) {
 
-            OrderObject order = (OrderObject)((MenuItem)sender).Header;
+            MenuItem menuItem               = (MenuItem)sender;
+            OrderObject menuItemOrder       = (OrderObject)menuItem.Header;
 
-            ActiveOrder = order;
-            OnPropertyChanged( "ActiveOrder" );
-            OnPropertyChanged( "Checklists" );
+            ActiveOrder = menuItemOrder;
+            // OnPropertyChanged( "Checklists" );
+            OnPropertyChanged( "OrderList" ); // Update the selected item
         }
 
         private void DeleteOrder_Click( object sender, RoutedEventArgs e ) {

@@ -4,12 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ORKK"
-        xmlns:converters="clr-namespace:ORKK.Converters"
         mc:Ignorable="d"
         Title="ORRK" Height="687" Width="800" WindowStartupLocation="CenterScreen">
     <Window.Resources>
-
-        <converters:IsSelectedConverter x:Key="IsSelectedConverter" />
 
         <Style x:Key="TextBlockHeaderStyle" TargetType="{x:Type TextBlock}">
             <Setter Property="TextAlignment" Value="Center" />
@@ -95,12 +92,11 @@
                 <MenuItem Header="Bestand">
 
                     <MenuItem Header="Nieuwe order" Click="NewOrder_Click"/>
-                    <MenuItem Header="Order selecteren" ItemsSource="{Binding OrderList}" IsEnabled="{Binding AnyOrders}">
+                    <MenuItem Header="Order selecteren" ItemsSource="{Binding OrderList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding AnyOrders}">
                         <MenuItem.ItemContainerStyle>
                             <Style TargetType="MenuItem">
                                 <EventSetter Event="Click" Handler="SelectOrder_Click"/>
-                                <!--<Setter Property="IsCheckable" Value="False" />-->
-                                <Setter Property="IsChecked" Value="{Binding Converter={StaticResource IsSelectedConverter}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <!--<Setter Property="IsChecked" Value="{Binding IsSelected, Mode=OneWay}" />-->
                             </Style>
                         </MenuItem.ItemContainerStyle>
                     </MenuItem>
