@@ -73,6 +73,12 @@ namespace ORKK.Data {
         }
 
         public override string ToString() {
+
+            if ( ID < 0 ) {
+
+                return $"Order (unsaved)";
+            }
+
             return $"Order { ID }";
         }
 

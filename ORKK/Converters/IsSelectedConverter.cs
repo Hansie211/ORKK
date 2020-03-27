@@ -14,8 +14,12 @@ namespace ORKK.Converters {
             return false;
 
             MainWindow mw = (MainWindow)App.Current.MainWindow;
+
+            if ( mw.ActiveOrder == null ) {
+                return false;
+            }
+
             return ( (OrderObject)value ).ID == mw.ActiveOrder.ID;
-            //throw new NotImplementedException();
         }
 
         public object ConvertBack( object value, Type targetType, object parameter, CultureInfo culture ) {

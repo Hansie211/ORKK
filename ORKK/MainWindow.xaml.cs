@@ -32,23 +32,16 @@ namespace ORKK {
             PropertyChanged.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
         }
 
-
-        public IEnumerable<CableChecklistObject> Checklists {
-            get {
-
-                if ( ActiveOrder == null ) {
-                    return null;
-                }
-
-                return DataVault.GetChildCableChecklists( ActiveOrder.ID );
+        private ObservableCollection<CableChecklistObject> _ChecklistList = null;
+        public ObservableCollection<CableChecklistObject> ChecklistList {
+            get { return _ChecklistList; }
+            set {
+                _ChecklistList = value;
+                OnPropertyChanged( "ChecklistList" );
             }
         }
 
-        private ObservableCollection<OrderObject> _OrderList;
-        public ICollection<OrderObject> OrderList {
-            get { return _OrderList; }
-            set { return; }
-        }
+        public ObservableCollection<OrderObject> OrderList { get; } = new ObservableCollection<OrderObject>( OrderVault.GetOrders() );
 
 
         private OrderObject _ActiveOrder = null;
@@ -70,10 +63,45 @@ namespace ORKK {
 
         public MainWindow() {
 
-            _OrderList = new ObservableCollection<OrderObject>( OrderVault.GetOrders() );
-
             this.DataContext = this;
             InitializeComponent();
+        }
+
+        private bool SaveOrder() {
+
+            if ( ActiveOrder == null ) {
+                return true;
+            }
+
+            // Can save?
+            // return true;
+
+            return false;
+        }
+
+        private void SelectNewOrder( OrderObject orderObject ) {
+
+            if ( orderObject.ID == ActiveOrder?.ID ) {
+
+                return;
+            }
+
+            if ( !SaveOrder() ) {
+
+                switch ( MessageBox.Show( "Fouten in order, kan niet opslaan. Wijzigingen verwerpen?", "Let op!", MessageBoxButton.YesNo ) ) {
+                    case MessageBoxResult.Yes:
+                        break;
+                    case MessageBoxResult.None:
+                    case MessageBoxResult.No:
+                        return;
+                }
+            }
+
+            ActiveOrder = orderObject;
+
+            ChecklistList = new ObservableCollection<CableChecklistObject>( DataVault.GetChildCableChecklists( ActiveOrder.ID ) );
+            OnPropertyChanged( "OrderList" );
+
         }
 
         private void CloseWindow_Click( object sender, RoutedEventArgs e ) {
@@ -83,22 +111,21 @@ namespace ORKK {
 
         private void NewChecklist_Click( object sender, RoutedEventArgs e ) {
 
-
-            //Checklists.Add( new Cablechecklist() );
+            ChecklistList.Add( new CableChecklistObject( -1, 0, 0, 0, 0, 0, 0, 0, 0, 0 ) );
+            OnPropertyChanged( "ChecklistList" );
         }
 
         private void DeleteChecklist_Click( object sender, RoutedEventArgs e ) {
 
+            OnPropertyChanged( "ChecklistList" );
         }
-
-        int x = 100;
 
         private void NewOrder_Click( object sender, RoutedEventArgs e ) {
 
-            _OrderList.Add( new OrderObject( x++, null, DateTime.MinValue, null, null, null, 0, null ) );
+            OrderList.Add( new OrderObject( -1, null, DateTime.Now, null, null, null, 0, null ) );
 
             OnPropertyChanged( "OrderList" );
-            // OnPropertyChanged( "AnyOrders" );
+            OnPropertyChanged( "AnyOrders" );
         }
 
         private void SelectOrder_Click( object sender, RoutedEventArgs e ) {
@@ -106,13 +133,17 @@ namespace ORKK {
             MenuItem menuItem               = (MenuItem)sender;
             OrderObject menuItemOrder       = (OrderObject)menuItem.Header;
 
-            ActiveOrder = menuItemOrder;
-            // OnPropertyChanged( "Checklists" );
-            OnPropertyChanged( "OrderList" ); // Update the selected item
+            if ( menuItemOrder.ID == ActiveOrder?.ID ) {
+
+                return;
+            }
+
+            SelectNewOrder( menuItemOrder );
         }
 
         private void DeleteOrder_Click( object sender, RoutedEventArgs e ) {
 
+            OnPropertyChanged( "OrderList" );
         }
 
         private void Save_Click( object sender, RoutedEventArgs e ) {
