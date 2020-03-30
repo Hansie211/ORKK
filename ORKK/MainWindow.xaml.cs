@@ -6,6 +6,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace ORKK
 {
@@ -78,12 +81,12 @@ namespace ORKK
             }
         }
 
-        public bool AnyOrders 
-        { 
-            get 
-            { 
-                return OrderList.Any(); 
-            } 
+        public bool AnyOrders
+        {
+            get
+            {
+                return OrderList.Any();
+            }
         }
 
         public MainWindow()
@@ -92,9 +95,11 @@ namespace ORKK
             InitializeComponent();
         }
 
-        private bool SaveOrder() {
+        private bool SaveOrder()
+        {
 
-            if ( ActiveOrder == null ) {
+            if (ActiveOrder == null)
+            {
                 return true;
             }
 
@@ -104,16 +109,20 @@ namespace ORKK
             return false;
         }
 
-        private void SelectNewOrder( OrderObject orderObject ) {
+        private void SelectNewOrder(OrderObject orderObject)
+        {
 
-            if ( orderObject.ID == ActiveOrder?.ID ) {
+            if (orderObject.ID == ActiveOrder?.ID)
+            {
 
                 return;
             }
 
-            if ( !SaveOrder() ) {
+            if (!SaveOrder())
+            {
 
-                switch ( MessageBox.Show( "Fouten in order, kan niet opslaan. Wijzigingen verwerpen?", "Let op!", MessageBoxButton.YesNo ) ) {
+                switch (MessageBox.Show("Fouten in order, kan niet opslaan. Wijzigingen verwerpen?", "Let op!", MessageBoxButton.YesNo))
+                {
                     case MessageBoxResult.Yes:
                         break;
                     case MessageBoxResult.None:
@@ -124,11 +133,11 @@ namespace ORKK
 
             ActiveOrder = orderObject;
 
-            ChecklistList = new ObservableCollection<CableChecklistObject>( DataVault.GetChildCableChecklists( ActiveOrder.ID ) );
-            OnPropertyChanged( "OrderList" );
+            OnPropertyChanged("OrderList");
         }
 
-        private void CloseWindow_Click( object sender, RoutedEventArgs e ) {
+        private void CloseWindow_Click(object sender, RoutedEventArgs e)
+        {
 
             Close();
         }
@@ -158,7 +167,7 @@ namespace ORKK
         }
 
         int orderID = 15;
-        int cableID = 20;
+        int cableID = 10;
 
         private void NewOrder_Click(object sender, RoutedEventArgs e)
         {
@@ -166,6 +175,8 @@ namespace ORKK
             orderID++;
             OrderVault.AddOrder(order);
             ActiveOrder = order;
+            OnPropertyChanged("OrderList");
+            OnPropertyChanged("AnyOrders");
         }
 
         private void SelectOrder_Click(object sender, RoutedEventArgs e)
@@ -179,6 +190,8 @@ namespace ORKK
             OrderObject order = ActiveOrder;
             ActiveOrder = null;
             OrderVault.RemoveOrder(order.ID);
+            OnPropertyChanged("OrderList");
+            OnPropertyChanged("AnyOrders");
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)
@@ -186,17 +199,20 @@ namespace ORKK
 
         }
 
-        private void Canvas_ManipulationStarted( object sender, ManipulationStartedEventArgs e ) {
-
+        private void Canvas_ManipulationStarted(object sender, ManipulationStartedEventArgs e)
+        {
             Canvas canvas = (Canvas)sender;
 
-            Ellipse el = new Ellipse();
-            el.Width = 10;
-            el.Height = 10;
-            el.Fill = new SolidColorBrush( Colors.Red );
-            Canvas.SetLeft( el, e.ManipulationOrigin.X );
-            Canvas.SetTop( el, e.ManipulationOrigin.Y );
-            canvas.Children.Add( el );
+            Ellipse el = new Ellipse
+            {
+                Width = 10,
+                Height = 10,
+                Fill = new SolidColorBrush(Colors.Red)
+            };
+
+            Canvas.SetLeft(el, e.ManipulationOrigin.X);
+            Canvas.SetTop(el, e.ManipulationOrigin.Y);
+            canvas.Children.Add(el);
         }
     }
 }
