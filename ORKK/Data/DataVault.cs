@@ -7,8 +7,8 @@ namespace ORKK.Data
     {
         public static void FillVaults()
         {
-            OrderVault.FillVault();
-            CableChecklistVault.FillVault();
+            OrderVault.FillVaultFromDB();
+            CableChecklistVault.FillVaultFromDB();
         }
 
         public static OrderObject GetParentOrderOf(int cableChecklistId)

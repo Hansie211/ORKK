@@ -32,7 +32,7 @@ namespace ORKK.Data
             return Orders;
         }
 
-        public static void FillVault()
+        public static void FillVaultFromDB()
         {
             string connString = $@"Data Source=(localdb)\MSSQLLocalDB; AttachDbFilename={ Path.GetFullPath($@"{AppDomain.CurrentDomain.BaseDirectory}..\..\Main.mdf") }";
             using (var conn = new SqlConnection(connString))

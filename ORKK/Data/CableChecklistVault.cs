@@ -30,7 +30,7 @@ namespace ORKK.Data
             return CableChecklists;
         }
 
-        public static void FillVault()
+        public static void FillVaultFromDB()
         {
             string connString = $@"Data Source=(localdb)\MSSQLLocalDB; AttachDbFilename={ System.IO.Path.GetFullPath($@"{System.AppDomain.CurrentDomain.BaseDirectory}..\..\Main.mdf") }";
             using (var conn = new SqlConnection(connString))
