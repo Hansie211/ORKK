@@ -1,33 +1,45 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 
-namespace ORKK.Data {
-    public static class OrderVault {
-        private static readonly List<OrderObject> Orders = new List<OrderObject>();
+namespace ORKK.Data
+{
+    public static class OrderVault
+    {
+        private static readonly ObservableCollection<OrderObject> Orders = new ObservableCollection<OrderObject>();
 
         public static int Count => Orders.Count;
 
-        public static OrderObject GetOrder( int id ) {
-            return Orders.FirstOrDefault( x => x.ID == id );
+        public static OrderObject GetOrder(int id)
+        {
+            return Orders.FirstOrDefault(x => x.ID == id);
         }
 
-        public static void RemoveOrder( int id ) {
-            Orders.Remove( GetOrder( id ) );
+        public static void AddOrder(OrderObject order)
+        {
+            Orders.Add(order);
         }
 
-        public static ReadOnlyCollection<OrderObject> GetOrders() {
-            return Orders.AsReadOnly();
+        public static void RemoveOrder(int id)
+        {
+            Orders.Remove(GetOrder(id));
         }
 
-        public static void FillVault() {
+        public static ObservableCollection<OrderObject> GetOrders()
+        {
+            return Orders;
+        }
 
-            string connString = $@"Data Source=(localdb)\MSSQLLocalDB; AttachDbFilename={ System.IO.Path.GetFullPath( $@"{System.AppDomain.CurrentDomain.BaseDirectory}..\..\Main.mdf" ) }";
-            using ( var conn = new SqlConnection( connString ) ) {
+        public static void FillVaultFromDB()
+        {
+            string connString = $@"Data Source=(localdb)\MSSQLLocalDB; AttachDbFilename={ Path.GetFullPath($@"{AppDomain.CurrentDomain.BaseDirectory}..\..\Main.mdf") }";
+            using (var conn = new SqlConnection(connString))
+            {
                 string orderString = @"SELECT * FROM OrderTable";
-                using ( var command = new SqlCommand( orderString, conn ) ) {
+                using (var command = new SqlCommand(orderString, conn))
+                {
                     conn.Open();
 
                     SqlDataReader reader = command.ExecuteReader();
@@ -50,19 +62,28 @@ namespace ORKK.Data {
         }
     }
 
-    public class OrderObject {
+    public class OrderObject
+    {
         public int ID { get; set; }
+
         public string WorkInstruction { get; set; }
+
         public DateTime DateExecution { get; set; }
+
         public string CableSupplier { get; set; }
+
         public string Observations { get; set; }
+
         public object Image { get; set; }
+
         public int HoursInCompany { get; set; }
+
         public string Reasons { get; set; }
 
-        private List<CableChecklistObject> CableChecklists;
+        private ObservableCollection<CableChecklistObject> CableChecklists;
 
-        public OrderObject( int id, string workInstruction, DateTime dateExecution, string cableSupplier, string observations, object image, int hoursInCompany, string reasons ) {
+        public OrderObject(int id, string workInstruction, DateTime dateExecution, string cableSupplier, string observations, object image, int hoursInCompany, string reasons)
+        {
             ID = id;
             WorkInstruction = workInstruction;
             DateExecution = dateExecution;
@@ -71,10 +92,11 @@ namespace ORKK.Data {
             Image = image;
             HoursInCompany = hoursInCompany;
             Reasons = reasons;
-            CableChecklists = new List<CableChecklistObject>();
+            CableChecklists = new ObservableCollection<CableChecklistObject>();
         }
 
-        public List<CableChecklistObject> GetCableChecklists() {
+        public ObservableCollection<CableChecklistObject> GetCableChecklists()
+        {
             return CableChecklists;
         }
 

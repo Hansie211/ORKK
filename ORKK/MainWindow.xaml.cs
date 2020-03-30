@@ -4,74 +4,91 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace ORKK {
+namespace ORKK
+{
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, INotifyPropertyChanged {
+    public partial class MainWindow : Window, INotifyPropertyChanged
+    {
 
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged( string propertyName = null ) {
 
-            if ( PropertyChanged == null ) {
+        protected void OnPropertyChanged(string propertyName = null)
+        {
+            if (PropertyChanged == null)
+            {
                 return;
             }
 
-            PropertyChanged.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
+            PropertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private ObservableCollection<CableChecklistObject> _ChecklistList = null;
-        public ObservableCollection<CableChecklistObject> ChecklistList {
-            get { return _ChecklistList; }
-            set {
-                _ChecklistList = value;
-                OnPropertyChanged( "ChecklistList" );
+        public ObservableCollection<CableChecklistObject> Checklists
+        {
+            get
+            {
+                if (ActiveOrder == null)
+                {
+                    return null;
+                }
+
+                return DataVault.GetChildCableChecklists(ActiveOrder.ID);
             }
         }
 
-        public ObservableCollection<OrderObject> OrderList { get; } = new ObservableCollection<OrderObject>( OrderVault.GetOrders() );
+        private CableChecklistObject _ActiveCableChecklist = null;
 
-        private CableChecklistObject _ActiveChecklistItem = null;
-        public CableChecklistObject ActiveChecklistItem {
-            get { return _ActiveChecklistItem; }
-            set {
-                _ActiveChecklistItem = value;
-                OnPropertyChanged( "ActiveChecklistItem" );
+        public CableChecklistObject ActiveCableChecklist
+        {
+            get => _ActiveCableChecklist;
+            set
+            {
+                _ActiveCableChecklist = value;
+                OnPropertyChanged("ActiveChecklistItem");
             }
+        }
+
+        public ObservableCollection<OrderObject> OrderList
+        {
+            get => OrderVault.GetOrders();
         }
 
         private OrderObject _ActiveOrder = null;
-        public OrderObject ActiveOrder {
-            get { return _ActiveOrder; }
-            set {
+
+        public OrderObject ActiveOrder
+        {
+            get => _ActiveOrder;
+            set
+            {
                 _ActiveOrder = value;
-                OnPropertyChanged( "ActiveOrder" );
+                OnPropertyChanged("ActiveOrder");
+                OnPropertyChanged("Checklists");
             }
         }
 
-        public IList<Damage> DamageTypes {
-            get {
-                return Enum.GetValues( typeof( Damage ) ).Cast<Damage>().ToArray();
+        public IList<Damage> DamageTypes
+        {
+            get
+            {
+                return Enum.GetValues(typeof(Damage)).Cast<Damage>().ToArray();
             }
         }
 
-        public bool AnyOrders { get { return OrderList.Count > 0; } }
+        public bool AnyOrders 
+        { 
+            get 
+            { 
+                return OrderList.Any(); 
+            } 
+        }
 
-        public MainWindow() {
-
-            this.DataContext = this;
+        public MainWindow()
+        {
+            DataContext = this;
             InitializeComponent();
         }
 
@@ -116,55 +133,56 @@ namespace ORKK {
             Close();
         }
 
-        private void NewChecklist_Click( object sender, RoutedEventArgs e ) {
-
-            if ( ActiveOrder == null ) {
-
+        private void NewChecklist_Click(object sender, RoutedEventArgs e)
+        {
+            if (ActiveOrder is null)
+            {
                 return;
             }
 
-            ChecklistList.Add( new CableChecklistObject( -1, 0, 0, 0, 0, 0, 0, 0, 0, 0 ) );
-            OnPropertyChanged( "ChecklistList" );
+            CableChecklistObject checklist = new CableChecklistObject(cableID, ActiveOrder.ID, 0, 0, 0, 0, 0, 0, 0, 0);
+            cableID++;
+            CableChecklistVault.AddCableChecklist(checklist);
+            OnPropertyChanged("Checklists");
         }
 
-        private void DeleteChecklist_Click( object sender, RoutedEventArgs e ) {
-
-            OnPropertyChanged( "ChecklistList" );
-        }
-
-        private void NewOrder_Click( object sender, RoutedEventArgs e ) {
-
-            OrderObject newOrder = new OrderObject( -1, null, DateTime.Now, null, null, null, 0, null );
-            OrderList.Add( newOrder );
-
-            if ( ActiveOrder == null ) {
-
-                SelectNewOrder( newOrder );
-            }
-
-            OnPropertyChanged( "OrderList" );
-            OnPropertyChanged( "AnyOrders" );
-        }
-
-        private void SelectOrder_Click( object sender, RoutedEventArgs e ) {
-
-            MenuItem menuItem               = (MenuItem)sender;
-            OrderObject menuItemOrder       = (OrderObject)menuItem.Header;
-
-            if ( menuItemOrder.ID == ActiveOrder?.ID ) {
-
+        private void DeleteChecklist_Click(object sender, RoutedEventArgs e)
+        {
+            if (ActiveCableChecklist is null)
+            {
                 return;
             }
 
-            SelectNewOrder( menuItemOrder );
+            CableChecklistVault.RemoveCableChecklist(ActiveCableChecklist.ID);
+            OnPropertyChanged("Checklists");
         }
 
-        private void DeleteOrder_Click( object sender, RoutedEventArgs e ) {
+        int orderID = 15;
+        int cableID = 20;
 
-            OnPropertyChanged( "OrderList" );
+        private void NewOrder_Click(object sender, RoutedEventArgs e)
+        {
+            OrderObject order = new OrderObject(orderID, string.Empty, DateTime.Now, string.Empty, string.Empty, null, 0, string.Empty);
+            orderID++;
+            OrderVault.AddOrder(order);
+            ActiveOrder = order;
         }
 
-        private void Save_Click( object sender, RoutedEventArgs e ) {
+        private void SelectOrder_Click(object sender, RoutedEventArgs e)
+        {
+            OrderObject order = (OrderObject)((MenuItem)sender).Header;
+            ActiveOrder = order;
+        }
+
+        private void DeleteOrder_Click(object sender, RoutedEventArgs e)
+        {
+            OrderObject order = ActiveOrder;
+            ActiveOrder = null;
+            OrderVault.RemoveOrder(order.ID);
+        }
+
+        private void Save_Click(object sender, RoutedEventArgs e)
+        {
 
         }
 
