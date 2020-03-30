@@ -1,5 +1,7 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 
 namespace ORKK.Data
@@ -32,7 +34,7 @@ namespace ORKK.Data
 
         public static void FillVaultFromDB()
         {
-            string connString = $@"Data Source=(localdb)\MSSQLLocalDB; AttachDbFilename={ System.IO.Path.GetFullPath($@"{System.AppDomain.CurrentDomain.BaseDirectory}..\..\Main.mdf") }";
+            string connString = $@"Data Source=(localdb)\MSSQLLocalDB; AttachDbFilename={ Path.GetFullPath($@"{AppDomain.CurrentDomain.BaseDirectory}..\..\Main.mdf") }";
             using (var conn = new SqlConnection(connString))
             {
                 string cableString = @"SELECT * FROM CableChecklistTable";
@@ -48,6 +50,34 @@ namespace ORKK.Data
                             reader.GetInt32(8), reader.GetInt32(9));
 
                         CableChecklists.Add(cableChecklistObject);
+                    }
+                }
+            }
+        }
+
+        public static void FillDBFromVault()
+        {
+
+        }
+        
+        public static int GetLastIDInDB()
+        {
+            string connString = $@"Data Source=(localdb)\MSSQLLocalDB; AttachDbFilename={ Path.GetFullPath($@"{AppDomain.CurrentDomain.BaseDirectory}..\..\Main.mdf") }";
+            using (var conn = new SqlConnection(connString))
+            {
+                conn.Open();
+
+                string orderString = "SELECT IDENT_CURRENT ('CableChecklistTable')";
+                using (var command = new SqlCommand(orderString, conn))
+                {
+                    var ID = command.ExecuteScalar();
+                    if (!(ID is DBNull))
+                    {
+                        return Convert.ToInt32(ID) + 1;
+                    }
+                    else
+                    {
+                        return -1;
                     }
                 }
             }

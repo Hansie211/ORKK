@@ -121,19 +121,31 @@ namespace ORKK
             OnPropertyChanged("Checklists");
         }
 
-        int orderID = 15;
-        int cableID = 20;
+        int cableID = CableChecklistVault.GetLastIDInDB();
 
         private void NewOrder_Click(object sender, RoutedEventArgs e)
         {
-            OrderObject order = new OrderObject(orderID, string.Empty, DateTime.Now, string.Empty, string.Empty, null, 0, string.Empty);
-            orderID++;
-            OrderVault.AddOrder(order);
-            ActiveOrder = order;
+            if (!(ActiveOrder is null) && OrderVault.InDatabase(ActiveOrder.ID))
+            {
+                OrderVault.UpdateTable(ActiveOrder);
+            }
+
+            int orderID = OrderVault.GetLastID() + 1;
+            if (orderID != -1)
+            {
+                OrderObject order = new OrderObject(orderID, string.Empty, DateTime.Now, string.Empty, string.Empty, 1, orderID, string.Empty);
+                OrderVault.AddOrder(order);
+                ActiveOrder = order;
+            }
         }
 
         private void SelectOrder_Click(object sender, RoutedEventArgs e)
         {
+            if (!(ActiveOrder is null) && OrderVault.InDatabase(ActiveOrder.ID))
+            {
+                OrderVault.UpdateTable(ActiveOrder);
+            }
+
             OrderObject order = (OrderObject)((MenuItem)sender).Header;
             ActiveOrder = order;
         }
@@ -147,7 +159,7 @@ namespace ORKK
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-
+            OrderVault.FillDBFromVault();
         }
     }
 }
