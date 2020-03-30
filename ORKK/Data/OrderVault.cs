@@ -22,29 +22,43 @@ namespace ORKK.Data {
             return Orders.AsReadOnly();
         }
 
+        private static bool CreateOrder( OrderObject order ) {
+
+            // string query = @""
+
+            return false;
+        }
+
+        public static bool SaveOrder( OrderObject order ) {
+
+            if ( order.ID < 0 ) {
+
+                return CreateOrder( order );
+            }
+
+            return false;
+        }
+
         public static void FillVault() {
 
-            string connString = $@"Data Source=(localdb)\MSSQLLocalDB; AttachDbFilename={ System.IO.Path.GetFullPath( $@"{System.AppDomain.CurrentDomain.BaseDirectory}..\..\Main.mdf" ) }";
-            using ( var conn = new SqlConnection( connString ) ) {
-                string orderString = @"SELECT * FROM OrderTable";
-                using ( var command = new SqlCommand( orderString, conn ) ) {
-                    conn.Open();
+            string orderString = @"SELECT * FROM OrderTable";
+            using ( var command = new SqlCommand( orderString, DataVault.connection ) ) {
 
-                    SqlDataReader reader = command.ExecuteReader();
-                    try {
-                        while ( reader.Read() ) {
+                SqlDataReader reader = command.ExecuteReader();
+                try {
 
-                            OrderObject orderObject = new OrderObject(reader.GetInt32(0), reader.GetString(1),
+                    while ( reader.Read() ) {
+
+                        OrderObject orderObject = new OrderObject(reader.GetInt32(0), reader.GetString(1),
                                                                   reader.GetDateTime(2), reader.GetString(3),
                                                                   reader.GetString(4), reader[5], reader.GetInt32(6),
                                                                   reader.GetString(7));
 
-                            Orders.Add( orderObject );
-                        }
-
-                    } finally {
-                        reader.Close();
+                        Orders.Add( orderObject );
                     }
+
+                } finally {
+                    reader.Close();
                 }
             }
         }

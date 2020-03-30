@@ -23,28 +23,23 @@ namespace ORKK.Data {
 
         public static void FillVault() {
 
-            string connString = $@"Data Source=(localdb)\MSSQLLocalDB; AttachDbFilename={ System.IO.Path.GetFullPath( $@"{System.AppDomain.CurrentDomain.BaseDirectory}..\..\Main.mdf" ) }";
-            using ( var conn = new SqlConnection( connString ) ) {
-                string cableString = @"SELECT * FROM CableChecklistTable";
-                using ( var command = new SqlCommand( cableString, conn ) ) {
+            string cableString = @"SELECT * FROM CableChecklistTable";
+            using ( var command = new SqlCommand( cableString, DataVault.connection ) ) {
 
-                    conn.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                try {
 
-                    SqlDataReader reader = command.ExecuteReader();
-                    try {
-
-                        while ( reader.Read() ) {
-                            CableChecklistObject cableChecklistObject = new CableChecklistObject(
+                    while ( reader.Read() ) {
+                        CableChecklistObject cableChecklistObject = new CableChecklistObject(
                             reader.GetInt32(0), reader.GetInt32(1), reader.GetInt32(2), reader.GetInt32(3),
                             reader.GetInt32(4), reader.GetInt32(5), reader.GetInt32(6), reader.GetInt32(7),
                             reader.GetInt32(8), reader.GetInt32(9));
 
-                            CableChecklists.Add( cableChecklistObject );
-                        }
-
-                    } finally {
-                        reader.Close();
+                        CableChecklists.Add( cableChecklistObject );
                     }
+
+                } finally {
+                    reader.Close();
                 }
             }
         }

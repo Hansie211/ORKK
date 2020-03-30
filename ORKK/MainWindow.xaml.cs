@@ -41,7 +41,7 @@ namespace ORKK {
             }
         }
 
-        public ObservableCollection<OrderObject> OrderList { get; } = new ObservableCollection<OrderObject>( OrderVault.GetOrders() );
+        public ObservableCollection<OrderObject> OrderList { get; };
 
         private CableChecklistObject _ActiveChecklistItem = null;
         public CableChecklistObject ActiveChecklistItem {
@@ -70,6 +70,9 @@ namespace ORKK {
         public bool AnyOrders { get { return OrderList.Count > 0; } }
 
         public MainWindow() {
+
+            // Initial load from database
+            OrderList = new ObservableCollection<OrderObject>( OrderVault.GetOrders() );
 
             this.DataContext = this;
             InitializeComponent();
