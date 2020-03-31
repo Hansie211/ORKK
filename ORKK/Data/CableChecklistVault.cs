@@ -41,17 +41,21 @@ namespace ORKK.Data
                     conn.Open();
 
                     SqlDataReader reader = command.ExecuteReader();
-                    while (reader.Read())
+                    try
                     {
-                        CableChecklistObject cableChecklistObject = new CableChecklistObject(
-                            reader.GetInt32(0), reader.GetInt32(1), reader.GetInt32(2), reader.GetInt32(3),
-                            reader.GetInt32(4), reader.GetInt32(5), reader.GetInt32(6), reader.GetInt32(7),
-                            reader.GetInt32(8), reader.GetInt32(9));
+                        while (reader.Read())
+                        {
+                            CableChecklistObject cableChecklistObject = new CableChecklistObject(
+                                reader.GetInt32(0), reader.GetInt32(1), reader.GetInt32(2), reader.GetInt32(3),
+                                reader.GetInt32(4), reader.GetInt32(5), reader.GetInt32(6), reader.GetInt32(7),
+                                reader.GetInt32(8), reader.GetInt32(9));
 
-                            CableChecklists.Add( cableChecklistObject );
+                            CableChecklists.Add(cableChecklistObject);
                         }
 
-                    } finally {
+                    }
+                    finally
+                    {
                         reader.Close();
                     }
                 }
