@@ -96,11 +96,11 @@
                 <MenuItem Header="Bestand">
 
                     <MenuItem Header="Nieuwe order" Click="NewOrder_Click"/>
-                    <MenuItem x:Name="menutest" Header="Order selecteren" ItemsSource="{Binding OrderList, Mode=OneWay}" IsEnabled="{Binding AnyOrders}">
+                    <MenuItem Header="Order selecteren" ItemsSource="{Binding MenuOrderList, Mode=OneWay}" IsEnabled="{Binding AnyOrders}" SubmenuOpened="MainMenu_SubmenuOpened">
                         <MenuItem.ItemContainerStyle>
                             <Style TargetType="MenuItem">
                                 <EventSetter Event="Click" Handler="SelectOrder_Click"/>
-                                <Setter Property="IsChecked" Value="{Binding Converter={StaticResource IsSelectedConverter}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <Setter Property="IsChecked" Value="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             </Style>
                         </MenuItem.ItemContainerStyle>
                     </MenuItem>
