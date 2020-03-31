@@ -15,59 +15,48 @@ namespace ORKK
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        int orderID = OrderVault.GetLastIDFromDB() + 1;
-        int cableID = CableChecklistVault.GetLastIDFromDB() + 1;
+          
+        private int orderID = OrderVault.GetLastIDFromDB() + 1;
+        private int cableID = CableChecklistVault.GetLastIDFromDB() + 1;
 
-        protected void OnPropertyChanged(string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        public ObservableCollection<CableChecklistObject> Checklists
-        {
-            get
-            {
-                return ActiveOrder == null ? null : DataVault.GetChildCableChecklists(ActiveOrder.ID);
-            }
-        }
-
-        private CableChecklistObject _ActiveCableChecklist = null;
-
-        public CableChecklistObject ActiveCableChecklist
-        {
-            get => _ActiveCableChecklist;
-            set
-            {
-                _ActiveCableChecklist = value;
-                OnPropertyChanged("ActiveCableChecklist");
-            }
-        }
+        private OrderObject activeOrder = null;
+        private CableChecklistObject activeCableChecklist = null;
 
         public ObservableCollection<OrderObject> OrderList
         {
             get => OrderVault.GetOrders();
         }
 
-        private OrderObject _ActiveOrder = null;
-
         public OrderObject ActiveOrder
         {
-            get => _ActiveOrder;
+            get => activeOrder;
             set
             {
-                _ActiveOrder = value;
+                activeOrder = value;
                 ActiveCableChecklist = null;
                 OnPropertyChanged("ActiveOrder");
                 OnPropertyChanged("Checklists");
             }
         }
 
+        public ObservableCollection<CableChecklistObject> Checklists
+        {
+            get => ActiveOrder == null ? null : DataVault.GetChildCableChecklists(ActiveOrder.ID);
+        }
+
+        public CableChecklistObject ActiveCableChecklist
+        {
+            get => activeCableChecklist;
+            set
+            {
+                activeCableChecklist = value;
+                OnPropertyChanged("ActiveCableChecklist");
+            }
+        }
+
         public IEnumerable<Damage> DamageTypes
         {
-            get
-            {
-                return Enum.GetValues(typeof(Damage)).Cast<Damage>();
-            }
+            get => Enum.GetValues(typeof(Damage)).Cast<Damage>();
         }
 
         public bool AnyOrders
@@ -82,6 +71,11 @@ namespace ORKK
         {
             DataContext = this;
             InitializeComponent();
+        }
+
+        protected void OnPropertyChanged(string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         private void CloseWindow_Click(object sender, RoutedEventArgs e)
@@ -124,11 +118,7 @@ namespace ORKK
         {
             if (orderID != -1)
             {
-                OrderObject order = new OrderObject(orderID, string.Empty, DateTime.Now, string.Empty, string.Empty, 1, 0, string.Empty)
-                {
-                    AnyPropertyChanged = false
-                };
-
+                OrderObject order = new OrderObject(orderID, string.Empty, DateTime.Now, string.Empty, string.Empty, 1, 0, string.Empty);
                 OrderVault.AddOrder(order);
                 ActiveOrder = order;
                 orderID++;
@@ -163,7 +153,6 @@ namespace ORKK
             bool added = OrderVault.GetOrders().Where(x => !OrderVault.OrderIDs.Contains(x.ID)).Any() || CableChecklistVault.GetCableChecklists().Where(x => !CableChecklistVault.CableChecklistIDs.Contains(x.ID)).Any();
             bool removed = OrderVault.RemovedIDs.Any() || CableChecklistVault.RemovedIDs.Any();
             bool changed = OrderVault.GetOrders().Where(x => x.AnyPropertyChanged).Any() || CableChecklistVault.GetCableChecklists().Where(x => x.AnyPropertyChanged).Any();
-
             if (added || removed || changed)
             {
                 switch (MessageBox.Show("Wijzigingen opslaan?", "Let op!", MessageBoxButton.YesNo))

@@ -14,7 +14,7 @@ namespace ORKK.Data
         private int hoursInCompany;
         private string reasons;
 
-        public int ID { get; private set; }
+        public int ID { get; set; }
 
         public string WorkInstruction
         {
@@ -96,6 +96,7 @@ namespace ORKK.Data
             Signature = signature;
             HoursInCompany = hoursInCompany;
             Reasons = reasons;
+            AnyPropertyChanged = false;
         }
 
         public override string ToString()

@@ -13,9 +13,9 @@
         private Damage totalDamages;
         private int typeDamageRust;
 
-        public int ID { get; private set; }
+        public int ID { get; set; }
 
-        public int OrderID { get; private set; }
+        public int OrderID { get; set; }
 
         public int Rupture6D
         {
@@ -109,6 +109,7 @@
             PositionMeasuringPoints = positionMeasuringPoints;
             TotalDamages = (Damage)totalDamages;
             TypeDamageRust = typeDamageRust;
+            AnyPropertyChanged = false;
         }
     }
 }
