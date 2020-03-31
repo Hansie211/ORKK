@@ -14,29 +14,20 @@ namespace ORKK
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-
         public event PropertyChangedEventHandler PropertyChanged;
+        int orderID = OrderVault.GetLastIDFromDB() + 1;
+        int cableID = CableChecklistVault.GetLastIDFromDB() + 1;
 
         protected void OnPropertyChanged(string propertyName = null)
         {
-            if (PropertyChanged == null)
-            {
-                return;
-            }
-
-            PropertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         public ObservableCollection<CableChecklistObject> Checklists
         {
             get
             {
-                if (ActiveOrder == null)
-                {
-                    return null;
-                }
-
-                return DataVault.GetChildCableChecklists(ActiveOrder.ID);
+                return ActiveOrder == null ? null : DataVault.GetChildCableChecklists(ActiveOrder.ID);
             }
         }
 
@@ -48,7 +39,7 @@ namespace ORKK
             set
             {
                 _ActiveCableChecklist = value;
-                OnPropertyChanged("ActiveChecklistItem");
+                OnPropertyChanged("ActiveCableChecklist");
             }
         }
 
@@ -65,25 +56,26 @@ namespace ORKK
             set
             {
                 _ActiveOrder = value;
+                ActiveCableChecklist = null;
                 OnPropertyChanged("ActiveOrder");
                 OnPropertyChanged("Checklists");
             }
         }
 
-        public IList<Damage> DamageTypes
+        public IEnumerable<Damage> DamageTypes
         {
             get
             {
-                return Enum.GetValues(typeof(Damage)).Cast<Damage>().ToArray();
+                return Enum.GetValues(typeof(Damage)).Cast<Damage>();
             }
         }
 
-        public bool AnyOrders 
-        { 
-            get 
-            { 
-                return OrderList.Any(); 
-            } 
+        public bool AnyOrders
+        {
+            get
+            {
+                return OrderList.Any();
+            }
         }
 
         public MainWindow()
@@ -104,10 +96,17 @@ namespace ORKK
                 return;
             }
 
-            CableChecklistObject checklist = new CableChecklistObject(cableID, ActiveOrder.ID, 0, 0, 0, 0, 0, 0, 0, 0);
-            cableID++;
-            CableChecklistVault.AddCableChecklist(checklist);
-            OnPropertyChanged("Checklists");
+            if (cableID != -1)
+            {
+                CableChecklistObject checklist = new CableChecklistObject(cableID, ActiveOrder.ID, 0, 0, 0, 0, 0, 0, 0, 0)
+                {
+                    AnyPropertyChanged = false
+                };
+
+                CableChecklistVault.AddCableChecklist(checklist);
+                cableID++;
+                OnPropertyChanged("Checklists");
+            }
         }
 
         private void DeleteChecklist_Click(object sender, RoutedEventArgs e)
@@ -121,45 +120,64 @@ namespace ORKK
             OnPropertyChanged("Checklists");
         }
 
-        int cableID = CableChecklistVault.GetLastIDInDB();
-
         private void NewOrder_Click(object sender, RoutedEventArgs e)
         {
-            if (!(ActiveOrder is null) && OrderVault.InDatabase(ActiveOrder.ID))
-            {
-                OrderVault.UpdateTable(ActiveOrder);
-            }
-
-            int orderID = OrderVault.GetLastID() + 1;
             if (orderID != -1)
             {
-                OrderObject order = new OrderObject(orderID, string.Empty, DateTime.Now, string.Empty, string.Empty, 1, orderID, string.Empty);
+                OrderObject order = new OrderObject(orderID, string.Empty, DateTime.Now, string.Empty, string.Empty, 1, 0, string.Empty)
+                {
+                    AnyPropertyChanged = false
+                };
+
                 OrderVault.AddOrder(order);
                 ActiveOrder = order;
+                orderID++;
             }
         }
 
         private void SelectOrder_Click(object sender, RoutedEventArgs e)
         {
-            if (!(ActiveOrder is null) && OrderVault.InDatabase(ActiveOrder.ID))
-            {
-                OrderVault.UpdateTable(ActiveOrder);
-            }
-
             OrderObject order = (OrderObject)((MenuItem)sender).Header;
             ActiveOrder = order;
         }
 
         private void DeleteOrder_Click(object sender, RoutedEventArgs e)
         {
-            OrderObject order = ActiveOrder;
+            if (ActiveOrder is null)
+            {
+                return;
+            }
+
+            OrderVault.RemoveOrder(ActiveOrder.ID);
             ActiveOrder = null;
-            OrderVault.RemoveOrder(order.ID);
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            OrderVault.FillDBFromVault();
+            OrderVault.SyncDBFromVault();
+            CableChecklistVault.SyncDBFromVault();
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            bool added = OrderVault.GetOrders().Where(x => !OrderVault.OrderIDs.Contains(x.ID)).Any() || CableChecklistVault.GetCableChecklists().Where(x => !CableChecklistVault.CableChecklistIDs.Contains(x.ID)).Any();
+            bool removed = OrderVault.RemovedIDs.Any() || CableChecklistVault.RemovedIDs.Any();
+            bool changed = OrderVault.GetOrders().Where(x => x.AnyPropertyChanged).Any() || CableChecklistVault.GetCableChecklists().Where(x => x.AnyPropertyChanged).Any();
+
+            if (added || removed || changed)
+            {
+                switch (MessageBox.Show("Wijzigingen opslaan?", "Let op!", MessageBoxButton.YesNo))
+                {
+                    case MessageBoxResult.Yes:
+                        OrderVault.SyncDBFromVault();
+                        CableChecklistVault.SyncDBFromVault();
+                        return;
+
+                    case MessageBoxResult.None:
+                    case MessageBoxResult.No:
+                        return;
+                }
+            }
         }
     }
 }
