@@ -7,165 +7,134 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace ORKK
-{
+namespace ORKK {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, INotifyPropertyChanged
-    {
+    public partial class MainWindow : Window, INotifyPropertyChanged {
         public event PropertyChangedEventHandler PropertyChanged;
-          
-        private int orderID = OrderVault.GetLastIDFromDB() + 1;
-        private int cableID = CableChecklistVault.GetLastIDFromDB() + 1;
+
+        // private int orderID = OrderVault.GetLastIDFromDB() + 1;
+        // private int cableID = CableChecklistVault.GetLastIDFromDB() + 1;
 
         private OrderObject activeOrder = null;
         private CableChecklistObject activeCableChecklist = null;
 
-        public ObservableCollection<OrderObject> OrderList
-        {
-            get => OrderVault.GetOrders();
+        public ObservableCollection<OrderObject> OrderList {
+            get => DataVault.Orders.Entries;
         }
 
-        public OrderObject ActiveOrder
-        {
+        public OrderObject ActiveOrder {
             get => activeOrder;
-            set
-            {
+            set {
                 activeOrder = value;
                 ActiveCableChecklist = null;
-                OnPropertyChanged("ActiveOrder");
-                OnPropertyChanged("Checklists");
+                OnPropertyChanged( "ActiveOrder" );
+                OnPropertyChanged( "Checklists" );
             }
         }
 
-        public ObservableCollection<CableChecklistObject> Checklists
-        {
-            get => ActiveOrder == null ? null : DataVault.GetChildCableChecklists(ActiveOrder.ID);
+        public ObservableCollection<CableChecklistObject> Checklists {
+            get => ActiveOrder == null ? null : DataVault.GetChildCableChecklists( ActiveOrder.ID );
         }
 
-        public CableChecklistObject ActiveCableChecklist
-        {
+        public CableChecklistObject ActiveCableChecklist {
             get => activeCableChecklist;
-            set
-            {
+            set {
                 activeCableChecklist = value;
-                OnPropertyChanged("ActiveCableChecklist");
+                OnPropertyChanged( "ActiveCableChecklist" );
             }
         }
 
-        public IEnumerable<Damage> DamageTypes
-        {
-            get => Enum.GetValues(typeof(Damage)).Cast<Damage>();
+        public IEnumerable<Damage> DamageTypes {
+            get => Enum.GetValues( typeof( Damage ) ).Cast<Damage>();
         }
 
-        public bool AnyOrders
-        {
-            get
-            {
+        public bool AnyOrders {
+            get {
                 return OrderList.Any();
             }
         }
 
-        public MainWindow()
-        {
+        public MainWindow() {
             DataContext = this;
             InitializeComponent();
         }
 
-        protected void OnPropertyChanged(string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        protected void OnPropertyChanged( string propertyName = null ) {
+            PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
         }
 
-        private void CloseWindow_Click(object sender, RoutedEventArgs e)
-        {
+        private void CloseWindow_Click( object sender, RoutedEventArgs e ) {
             Close();
         }
 
-        private void NewChecklist_Click(object sender, RoutedEventArgs e)
-        {
-            if (ActiveOrder is null)
-            {
+        private void NewChecklist_Click( object sender, RoutedEventArgs e ) {
+
+            if ( ActiveOrder is null ) {
                 return;
             }
 
-            if (cableID != -1)
-            {
-                CableChecklistObject checklist = new CableChecklistObject(cableID, ActiveOrder.ID, 0, 0, 0, 0, 0, 0, 0, 0)
-                {
-                    AnyPropertyChanged = false
-                };
+            CableChecklistObject checklist = new CableChecklistObject( DataVault.CableChecklists.NextID(), ActiveOrder.ID, 0, 0, 0, 0, 0, 0, 0, 0);
 
-                CableChecklistVault.AddCableChecklist(checklist);
-                cableID++;
-                OnPropertyChanged("Checklists");
-            }
+            DataVault.CableChecklists.AddEntry( checklist );
+            OnPropertyChanged( "Checklists" );
         }
 
-        private void DeleteChecklist_Click(object sender, RoutedEventArgs e)
-        {
-            if (ActiveCableChecklist is null)
-            {
+        private void DeleteChecklist_Click( object sender, RoutedEventArgs e ) {
+
+            if ( ActiveCableChecklist is null ) {
                 return;
             }
 
-            CableChecklistVault.RemoveCableChecklist(ActiveCableChecklist.ID);
-            OnPropertyChanged("Checklists");
+            DataVault.CableChecklists.RemoveEntry( ActiveCableChecklist.ID );
+            OnPropertyChanged( "Checklists" );
         }
 
-        private void NewOrder_Click(object sender, RoutedEventArgs e)
-        {
-            if (orderID != -1)
-            {
-                OrderObject order = new OrderObject(orderID, string.Empty, DateTime.Now, string.Empty, string.Empty, 1, 0, string.Empty);
-                OrderVault.AddOrder(order);
-                ActiveOrder = order;
-                orderID++;
-            }
+        private void NewOrder_Click( object sender, RoutedEventArgs e ) {
+
+            OrderObject order = new OrderObject( DataVault.Orders.NextID(), string.Empty, DateTime.Now, string.Empty, string.Empty, null, 0, string.Empty);
+            DataVault.Orders.AddEntry( order );
+            ActiveOrder = order;
         }
 
-        private void SelectOrder_Click(object sender, RoutedEventArgs e)
-        {
+        private void SelectOrder_Click( object sender, RoutedEventArgs e ) {
+
             OrderObject order = (OrderObject)((MenuItem)sender).Header;
             ActiveOrder = order;
         }
 
-        private void DeleteOrder_Click(object sender, RoutedEventArgs e)
-        {
-            if (ActiveOrder is null)
-            {
+        private void DeleteOrder_Click( object sender, RoutedEventArgs e ) {
+
+            if ( ActiveOrder is null ) {
                 return;
             }
 
-            OrderVault.RemoveOrder(ActiveOrder.ID);
+            DataVault.Orders.RemoveEntry( ActiveOrder.ID );
             ActiveOrder = null;
         }
 
-        private void Save_Click(object sender, RoutedEventArgs e)
-        {
-            OrderVault.SyncDBFromVault();
-            CableChecklistVault.SyncDBFromVault();
+        private void Save_Click( object sender, RoutedEventArgs e ) {
+
+            DataVault.SyncDBFromVaults();
         }
 
-        private void Window_Closing(object sender, CancelEventArgs e)
-        {
-            bool added = OrderVault.GetOrders().Where(x => !OrderVault.OrderIDs.Contains(x.ID)).Any() || CableChecklistVault.GetCableChecklists().Where(x => !CableChecklistVault.CableChecklistIDs.Contains(x.ID)).Any();
-            bool removed = OrderVault.RemovedIDs.Any() || CableChecklistVault.RemovedIDs.Any();
-            bool changed = OrderVault.GetOrders().Where(x => x.AnyPropertyChanged).Any() || CableChecklistVault.GetCableChecklists().Where(x => x.AnyPropertyChanged).Any();
-            if (added || removed || changed)
-            {
-                switch (MessageBox.Show("Wijzigingen opslaan?", "Let op!", MessageBoxButton.YesNo))
-                {
-                    case MessageBoxResult.Yes:
-                        OrderVault.SyncDBFromVault();
-                        CableChecklistVault.SyncDBFromVault();
-                        return;
+        private void Window_Closing( object sender, CancelEventArgs e ) {
 
-                    case MessageBoxResult.None:
-                    case MessageBoxResult.No:
-                        return;
-                }
+            if ( !DataVault.IsDirty() ) {
+
+                return;
+            }
+
+            switch ( MessageBox.Show( "Wijzigingen opslaan?", "Let op!", MessageBoxButton.YesNo ) ) {
+
+                case MessageBoxResult.Yes:
+                    DataVault.SyncDBFromVaults( false );
+                    return;
+
+                case MessageBoxResult.None:
+                case MessageBoxResult.No:
+                    return;
             }
         }
     }

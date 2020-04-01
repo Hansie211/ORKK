@@ -1,10 +1,9 @@
 ﻿using System;
+using System.Data;
+using System.Data.SqlClient;
 
-namespace ORKK.Data
-{
-    public class OrderObject
-    {
-        public bool AnyPropertyChanged;
+namespace ORKK.Data {
+    public class OrderObject : DatabaseVaultObject {
 
         private string workInstruction;
         private DateTime dateExecution;
@@ -14,80 +13,67 @@ namespace ORKK.Data
         private int hoursInCompany;
         private string reasons;
 
-        public int ID { get; set; }
-
-        public string WorkInstruction
-        {
+        public string WorkInstruction {
             get => workInstruction;
-            set
-            {
+            set {
                 workInstruction = value;
                 AnyPropertyChanged = true;
             }
         }
 
-        public DateTime DateExecution
-        {
+        public DateTime DateExecution {
             get => dateExecution;
-            set
-            {
+            set {
                 dateExecution = value;
                 AnyPropertyChanged = true;
             }
         }
 
-        public string CableSupplier
-        {
+        public string CableSupplier {
             get => cableSupplier;
-            set
-            {
+            set {
                 cableSupplier = value;
                 AnyPropertyChanged = true;
             }
         }
 
-        public string Observations
-        {
+        public string Observations {
             get => observations;
-            set
-            {
+            set {
                 observations = value;
                 AnyPropertyChanged = true;
             }
         }
 
-        public object Signature
-        {
+        public object Signature {
             get => signature;
-            set
-            {
+            set {
                 signature = value;
                 AnyPropertyChanged = true;
             }
         }
 
-        public int HoursInCompany
-        {
+        public int HoursInCompany {
             get => hoursInCompany;
-            set
-            {
+            set {
                 hoursInCompany = value;
                 AnyPropertyChanged = true;
             }
         }
 
-        public string Reasons
-        {
+        public string Reasons {
             get => reasons;
-            set
-            {
+            set {
                 reasons = value;
                 AnyPropertyChanged = true;
             }
         }
 
-        public OrderObject(int id, string workInstruction, DateTime dateExecution, string cableSupplier, string observations, object signature, int hoursInCompany, string reasons)
-        {
+        public OrderObject() {
+
+        }
+
+        public OrderObject( int id, string workInstruction, DateTime dateExecution, string cableSupplier, string observations, object signature, int hoursInCompany, string reasons ) {
             ID = id;
             WorkInstruction = workInstruction;
             DateExecution = dateExecution;
@@ -96,13 +82,14 @@ namespace ORKK.Data
             Signature = signature;
             HoursInCompany = hoursInCompany;
             Reasons = reasons;
+
             AnyPropertyChanged = false;
         }
 
-        public override string ToString()
-        {
+        public override string ToString() {
             return $"Order { ID }";
         }
+
     }
 
 }
