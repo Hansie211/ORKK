@@ -3,14 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ORKK"
-        xmlns:converters="clr-namespace:ORKK.Converters"
         mc:Ignorable="d"
-        Title="ORRK" Height="687" Width="800" WindowStartupLocation="CenterScreen">
+        Title="ORRK" Height="687" Width="800" WindowStartupLocation="CenterScreen" Closing="Window_Closing" ResizeMode="NoResize">
     <Window.Resources>
-
-        <converters:IsSelectedConverter x:Key="IsSelectedConverter" />
-
         <Style x:Key="TextBlockHeaderStyle" TargetType="{x:Type TextBlock}">
             <Setter Property="TextAlignment" Value="Center" />
             <Setter Property="TextWrapping" Value="WrapWithOverflow" />
@@ -96,11 +91,11 @@
                 <MenuItem Header="Bestand">
 
                     <MenuItem Header="Nieuwe order" Click="NewOrder_Click"/>
-                    <MenuItem x:Name="menutest" Header="Order selecteren" ItemsSource="{Binding OrderList, Mode=OneWay}" IsEnabled="{Binding AnyOrders}">
+                    <MenuItem Header="Order selecteren" ItemsSource="{Binding OrderList, Mode=OneWay}" IsEnabled="{Binding AnyOrders}">
                         <MenuItem.ItemContainerStyle>
                             <Style TargetType="MenuItem">
                                 <EventSetter Event="Click" Handler="SelectOrder_Click"/>
-                                <Setter Property="IsChecked" Value="{Binding Converter={StaticResource IsSelectedConverter}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <Setter Property="IsChecked" Value="{Binding IsChecked}"/>
                             </Style>
                         </MenuItem.ItemContainerStyle>
                     </MenuItem>
@@ -174,7 +169,7 @@
             <TextBlock Style="{StaticResource TextBlockHeaderStyle}" Grid.Row="0" Grid.Column="7" Grid.RowSpan="1" Text="Beschadiging en vervorming" />
             <TextBlock Style="{StaticResource TextBlockHeaderStyle}" Grid.Row="1" Grid.Column="7" Grid.RowSpan="1" Text="Type" />
 
-            <ListView Grid.Row="2" Grid.ColumnSpan="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemContainerStyle="{DynamicResource ListViewItemStyle}" ItemsSource="{Binding Checklists}" SelectionMode="Single" SelectedItem="{Binding ActiveCableChecklist}"/>
+            <ListView Grid.Row="2" Grid.ColumnSpan="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemContainerStyle="{DynamicResource ListViewItemStyle}" ItemsSource="{Binding Checklists, UpdateSourceTrigger=PropertyChanged}" SelectionMode="Single" SelectedItem="{Binding ActiveCableChecklist}"/>
         </Grid>
 
         <Grid Grid.Row="4">
@@ -200,15 +195,15 @@
             <TextBlock Grid.Row="1" Grid.Column="2" Text="Aantal bedrijfsuren:" />
             <TextBlock Grid.Row="2" Grid.Column="2" Text="Redenen voor het afleggen:" TextWrapping="WrapWithOverflow" />
 
-            <DatePickerTextBox Grid.Row="0" Grid.Column="1" Text="{Binding ActiveOrder.DateExecution}" />
-            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ActiveOrder.CableSupplier}"  />
-            <TextBox Grid.Row="2" Grid.Column="1" AcceptsReturn="True" TextWrapping="Wrap" Text="{Binding ActiveOrder.Observations}"/>
+            <DatePickerTextBox Grid.Row="0" Grid.Column="1" Text="{Binding ActiveOrder.DateExecution, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ActiveOrder.CableSupplier, UpdateSourceTrigger=PropertyChanged}"  />
+            <TextBox Grid.Row="2" Grid.Column="1" AcceptsReturn="True" TextWrapping="Wrap" Text="{Binding ActiveOrder.Observations, UpdateSourceTrigger=PropertyChanged}"/>
 
             <Border Grid.Row="0" Grid.Column="3" BorderThickness="1" BorderBrush="#FFABADB3">
                 <Canvas ManipulationStarted="Canvas_ManipulationStarted" IsManipulationEnabled="True"  />
             </Border>
-            <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding ActiveOrder.HoursInCompany}" />
-            <TextBox Grid.Row="2" Grid.Column="3" AcceptsReturn="True" TextWrapping="Wrap" Text="{Binding ActiveOrder.Reasons}"/>
+            <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding ActiveOrder.HoursInCompany, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Grid.Row="2" Grid.Column="3" AcceptsReturn="True" TextWrapping="Wrap" Text="{Binding ActiveOrder.Reasons, UpdateSourceTrigger=PropertyChanged}"/>
 
         </Grid>
 

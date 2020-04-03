@@ -1,14 +1,14 @@
 ﻿using ORKK.Data;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
+using System.Windows.Data;
 using System.Windows.Media;
-using System.Windows.Shapes;
 
 namespace ORKK
 {
@@ -17,76 +17,60 @@ namespace ORKK
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void OnPropertyChanged(string propertyName = null)
-        {
-            if (PropertyChanged == null)
-            {
-                return;
-            }
+        private int orderID = OrderVault.GetLastIDFromDB() + 1;
+        private int cableID = CableChecklistVault.GetLastIDFromDB() + 1;
 
-            PropertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        private OrderObject activeOrder = null;
+        private CableChecklistObject activeCableChecklist = null;
 
-        public ObservableCollection<CableChecklistObject> Checklists
-        {
-            get
-            {
-                if (ActiveOrder == null)
-                {
-                    return null;
-                }
-
-                return DataVault.GetChildCableChecklists(ActiveOrder.ID);
-            }
-        }
-
-        private CableChecklistObject _ActiveCableChecklist = null;
-
-        public CableChecklistObject ActiveCableChecklist
-        {
-            get => _ActiveCableChecklist;
-            set
-            {
-                _ActiveCableChecklist = value;
-                OnPropertyChanged("ActiveChecklistItem");
-            }
-        }
-
-        public ObservableCollection<OrderObject> OrderList
+        public BindingList<OrderObject> OrderList
         {
             get => OrderVault.GetOrders();
         }
 
-        private OrderObject _ActiveOrder = null;
-
         public OrderObject ActiveOrder
         {
-            get => _ActiveOrder;
+            get => activeOrder;
             set
             {
-                _ActiveOrder = value;
+                activeOrder = value;
+                if (!(activeOrder is null))
+                {
+                    activeOrder.IsChecked = true;
+                    OrderList.Where(x => x.ID != activeOrder.ID).ToList().ForEach(x => x.IsChecked = false);
+                }
+
+                ActiveCableChecklist = null;
                 OnPropertyChanged("ActiveOrder");
                 OnPropertyChanged("Checklists");
             }
         }
 
-        public IList<Damage> DamageTypes
+        public BindingList<CableChecklistObject> Checklists
         {
-            get
+            get => ActiveOrder == null ? null : DataVault.GetChildCableChecklists(ActiveOrder.ID);
+        }
+
+        public CableChecklistObject ActiveCableChecklist
+        {
+            get => activeCableChecklist;
+            set
             {
-                return Enum.GetValues(typeof(Damage)).Cast<Damage>().ToArray();
+                activeCableChecklist = value;
+                OnPropertyChanged("ActiveCableChecklist");
             }
+        }
+
+        public IEnumerable<Damage> DamageTypes
+        {
+            get => Enum.GetValues(typeof(Damage)).Cast<Damage>();
         }
 
         public bool AnyOrders
         {
-            get
-            {
-                return OrderList.Any();
-            }
+            get => OrderVault.GetOrders().Any();
         }
 
         public MainWindow()
@@ -95,50 +79,13 @@ namespace ORKK
             InitializeComponent();
         }
 
-        private bool SaveOrder()
+        protected void OnPropertyChanged(string propertyName = null)
         {
-
-            if (ActiveOrder == null)
-            {
-                return true;
-            }
-
-            // Can save?
-            // return true;
-
-            return false;
-        }
-
-        private void SelectNewOrder(OrderObject orderObject)
-        {
-
-            if (orderObject.ID == ActiveOrder?.ID)
-            {
-
-                return;
-            }
-
-            if (!SaveOrder())
-            {
-
-                switch (MessageBox.Show("Fouten in order, kan niet opslaan. Wijzigingen verwerpen?", "Let op!", MessageBoxButton.YesNo))
-                {
-                    case MessageBoxResult.Yes:
-                        break;
-                    case MessageBoxResult.None:
-                    case MessageBoxResult.No:
-                        return;
-                }
-            }
-
-            ActiveOrder = orderObject;
-
-            OnPropertyChanged("OrderList");
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         private void CloseWindow_Click(object sender, RoutedEventArgs e)
         {
-
             Close();
         }
 
@@ -149,10 +96,17 @@ namespace ORKK
                 return;
             }
 
-            CableChecklistObject checklist = new CableChecklistObject(cableID, ActiveOrder.ID, 0, 0, 0, 0, 0, 0, 0, 0);
-            cableID++;
-            CableChecklistVault.AddCableChecklist(checklist);
-            OnPropertyChanged("Checklists");
+            if (cableID != -1)
+            {
+                CableChecklistObject checklist = new CableChecklistObject(cableID, ActiveOrder.ID, 0, 0, 0, 0, 0, 0, 0, 0)
+                {
+                    AnyPropertyChanged = false
+                };
+
+                CableChecklistVault.AddCableChecklist(checklist);
+                cableID++;
+                OnPropertyChanged("Checklists");
+            }
         }
 
         private void DeleteChecklist_Click(object sender, RoutedEventArgs e)
@@ -166,53 +120,63 @@ namespace ORKK
             OnPropertyChanged("Checklists");
         }
 
-        int orderID = 15;
-        int cableID = 10;
-
         private void NewOrder_Click(object sender, RoutedEventArgs e)
         {
-            OrderObject order = new OrderObject(orderID, string.Empty, DateTime.Now, string.Empty, string.Empty, null, 0, string.Empty);
-            orderID++;
-            OrderVault.AddOrder(order);
-            ActiveOrder = order;
-            OnPropertyChanged("OrderList");
-            OnPropertyChanged("AnyOrders");
+            if (orderID != -1)
+            {
+                OrderObject order = new OrderObject(orderID, string.Empty, DateTime.Now, string.Empty, string.Empty, 1, 0, string.Empty);
+                OrderVault.AddOrder(order);
+                ActiveOrder = order;
+                orderID++;
+            }
         }
 
         private void SelectOrder_Click(object sender, RoutedEventArgs e)
         {
-            OrderObject order = (OrderObject)((MenuItem)sender).Header;
-            ActiveOrder = order;
+            ActiveOrder = (OrderObject)(sender as MenuItem).Header;
         }
 
         private void DeleteOrder_Click(object sender, RoutedEventArgs e)
         {
-            OrderObject order = ActiveOrder;
+            if (ActiveOrder is null)
+            {
+                return;
+            }
+
+            OrderVault.RemoveOrder(ActiveOrder.ID);
+            OrderList.Remove(ActiveOrder);
             ActiveOrder = null;
-            OrderVault.RemoveOrder(order.ID);
-            OnPropertyChanged("OrderList");
-            OnPropertyChanged("AnyOrders");
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-
+            OrderVault.SyncDBFromVault();
+            CableChecklistVault.SyncDBFromVault();
         }
 
-        private void Canvas_ManipulationStarted(object sender, ManipulationStartedEventArgs e)
+        private void Window_Closing(object sender, CancelEventArgs e)
         {
-            Canvas canvas = (Canvas)sender;
-
-            Ellipse el = new Ellipse
+            bool added = OrderVault.GetOrders().Where(x => !OrderVault.OrderIDs.Contains(x.ID)).Any() || CableChecklistVault.GetCableChecklists().Where(x => !CableChecklistVault.CableChecklistIDs.Contains(x.ID)).Any();
+            bool removed = OrderVault.RemovedIDs.Any() || CableChecklistVault.RemovedIDs.Any();
+            bool changed = OrderVault.GetOrders().Where(x => x.AnyPropertyChanged).Any() || CableChecklistVault.GetCableChecklists().Where(x => x.AnyPropertyChanged).Any();
+            if (added || removed || changed)
             {
-                Width = 10,
-                Height = 10,
-                Fill = new SolidColorBrush(Colors.Red)
-            };
+                switch (MessageBox.Show("Er zijn onopgeslagen wijzigingen! Wilt u deze wijzigingen opslaan?", "Let op!", MessageBoxButton.YesNoCancel))
+                {
+                    case MessageBoxResult.Yes:
+                        OrderVault.SyncDBFromVault();
+                        CableChecklistVault.SyncDBFromVault();
+                        return;
 
-            Canvas.SetLeft(el, e.ManipulationOrigin.X);
-            Canvas.SetTop(el, e.ManipulationOrigin.Y);
-            canvas.Children.Add(el);
+                    case MessageBoxResult.None:
+                    case MessageBoxResult.No:
+                        return;
+
+                    case MessageBoxResult.Cancel:
+                        e.Cancel = true;
+                        return;
+                }
+            }
         }
     }
 }
