@@ -20,9 +20,7 @@ namespace ORKK {
         private OrderObject activeOrder = null;
         private CableChecklistObject activeCableChecklist = null;
 
-        public ObservableCollection<OrderObject> OrderList {
-            get => DataVault.Orders.Entries;
-        }
+        public ICollection<MenuItem> MenuItems { get; set; } = new ObservableCollection<MenuItem>();
 
         public OrderObject ActiveOrder {
             get => activeOrder;
@@ -52,11 +50,17 @@ namespace ORKK {
 
         public bool AnyOrders {
             get {
-                return OrderList.Any();
+                return DataVault.Orders.Entries.Any();
             }
         }
 
         public MainWindow() {
+
+            foreach ( OrderObject order in DataVault.Orders.Entries ) {
+
+                MenuItems.Add( new MenuItem() { Header = order } );
+            }
+
             DataContext = this;
             InitializeComponent();
         }
@@ -76,8 +80,8 @@ namespace ORKK {
             }
 
             CableChecklistObject checklist = new CableChecklistObject( DataVault.CableChecklists.NextID(), ActiveOrder.ID, 0, 0, 0, 0, 0, 0, 0, 0);
-
             DataVault.CableChecklists.AddEntry( checklist );
+
             OnPropertyChanged( "Checklists" );
         }
 
@@ -95,13 +99,30 @@ namespace ORKK {
 
             OrderObject order = new OrderObject( DataVault.Orders.NextID(), string.Empty, DateTime.Now, string.Empty, string.Empty, null, 0, string.Empty);
             DataVault.Orders.AddEntry( order );
+
+            foreach ( MenuItem item in MenuItems ) {
+
+                item.IsChecked = false;
+            }
+            MenuItems.Add( new MenuItem() { Header = order, IsChecked = true } );
             ActiveOrder = order;
+
+            OnPropertyChanged( "MenuItems" );
         }
 
         private void SelectOrder_Click( object sender, RoutedEventArgs e ) {
 
-            OrderObject order = (OrderObject)((MenuItem)sender).Header;
-            ActiveOrder = order;
+            MenuItem menuItem           = (MenuItem)sender;
+            OrderObject selectedOrder   = (OrderObject)menuItem.Header;
+
+            ActiveOrder = selectedOrder;
+
+            foreach ( MenuItem item in MenuItems ) {
+
+                OrderObject order = (OrderObject)item.Header;
+                item.IsChecked = ( order.ID == selectedOrder.ID );
+            }
+            OnPropertyChanged( "MenuItems" );
         }
 
         private void DeleteOrder_Click( object sender, RoutedEventArgs e ) {
@@ -111,6 +132,17 @@ namespace ORKK {
             }
 
             DataVault.Orders.RemoveEntry( ActiveOrder.ID );
+
+            foreach ( MenuItem item in MenuItems ) {
+
+                if ( ( (OrderObject)item.Header ).ID == ActiveOrder.ID ) {
+
+                    MenuItems.Remove( item );
+                    break;
+                }
+            }
+            OnPropertyChanged( "MenuItems" );
+
             ActiveOrder = null;
         }
 

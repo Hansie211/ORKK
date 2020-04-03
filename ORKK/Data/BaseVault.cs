@@ -31,7 +31,7 @@ namespace ORKK.Data {
             return ++lastID;
         }
 
-        public ObservableCollection<T> Entries { get; } = new ObservableCollection<T>();
+        public IList<T> Entries { get; } = new List<T>();
         public int Count { get => Entries.Count; }
 
         public BaseVault() {
