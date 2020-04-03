@@ -1,11 +1,12 @@
-﻿using System;
+﻿using ORKK.Data.Objects;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 
-namespace ORKK.Data
+namespace ORKK.Data.Vaults
 {
     public abstract class BaseVault<T> where T : DatabaseVaultObject
     {

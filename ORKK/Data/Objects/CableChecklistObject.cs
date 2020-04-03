@@ -1,4 +1,4 @@
-﻿namespace ORKK.Data
+﻿namespace ORKK.Data.Objects
 {
     public class CableChecklistObject : DatabaseVaultObject
     {

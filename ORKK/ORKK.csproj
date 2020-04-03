@@ -84,16 +84,16 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Data\CableChecklistObject.cs" />
-    <Compile Include="Data\CableChecklistVault.cs" />
+    <Compile Include="Data\Objects\CableChecklistObject.cs" />
+    <Compile Include="Data\Vaults\CableChecklistVault.cs" />
     <Compile Include="Data\ColumnProperty.cs" />
     <Compile Include="Data\Damage.cs" />
     <Compile Include="Data\TableNameAttribute.cs" />
-    <Compile Include="Data\BaseVault.cs" />
-    <Compile Include="Data\DatabaseVaultObject.cs" />
-    <Compile Include="Data\DataVault.cs" />
-    <Compile Include="Data\OrderObject.cs" />
-    <Compile Include="Data\OrderVault.cs" />
+    <Compile Include="Data\Vaults\BaseVault.cs" />
+    <Compile Include="Data\Objects\DatabaseVaultObject.cs" />
+    <Compile Include="Data\Vaults\DataVault.cs" />
+    <Compile Include="Data\Objects\OrderObject.cs" />
+    <Compile Include="Data\Vaults\OrderVault.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

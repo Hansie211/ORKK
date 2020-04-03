@@ -1,4 +1,6 @@
 ﻿using ORKK.Data;
+using ORKK.Data.Objects;
+using ORKK.Data.Vaults;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

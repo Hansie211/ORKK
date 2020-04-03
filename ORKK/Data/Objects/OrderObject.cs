@@ -1,7 +1,6 @@
 ﻿using System;
-using System.ComponentModel;
 
-namespace ORKK.Data
+namespace ORKK.Data.Objects
 {
     public class OrderObject : DatabaseVaultObject
     {

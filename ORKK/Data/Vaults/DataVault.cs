@@ -1,7 +1,8 @@
-﻿using System.ComponentModel;
+﻿using ORKK.Data.Objects;
+using System.ComponentModel;
 using System.Linq;
 
-namespace ORKK.Data
+namespace ORKK.Data.Vaults
 {
     public static class DataVault
     {

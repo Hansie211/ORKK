@@ -1,6 +1,7 @@
-﻿using System.Data;
+﻿using ORKK.Data.Objects;
+using System.Data;
 
-namespace ORKK.Data
+namespace ORKK.Data.Vaults
 {
     [TableName("OrderTable")]
     public class OrderVault : BaseVault<OrderObject>

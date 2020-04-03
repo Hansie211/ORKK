@@ -1,4 +1,4 @@
-﻿using ORKK.Data;
+﻿using ORKK.Data.Vaults;
 using System.Windows;
 
 namespace ORKK

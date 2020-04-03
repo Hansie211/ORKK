@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace ORKK.Data
+namespace ORKK.Data.Objects
 {
     public abstract class DatabaseVaultObject : INotifyPropertyChanged
     {
