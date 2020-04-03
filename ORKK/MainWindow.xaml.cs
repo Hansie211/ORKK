@@ -43,11 +43,13 @@ namespace ORKK
             get => activeOrder;
             set
             {
+                // Previous order
                 if (!(activeOrder is null))
                 {
                     activeOrder.Signature = CanvasToByteArray(signatureCanvas);
                 }
 
+                // New order
                 activeOrder = value;
                 if (!(activeOrder is null))
                 {
@@ -136,6 +138,11 @@ namespace ORKK
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
+            if (!(ActiveOrder is null))
+            {
+                ActiveOrder.Signature = CanvasToByteArray(signatureCanvas);
+            }
+
             DataVault.SyncDBFromVaults();
         }
 

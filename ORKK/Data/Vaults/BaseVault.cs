@@ -146,7 +146,6 @@ namespace ORKK.Data.Vaults
 
                 foreach (int id in RemovedIDs)
                 {
-
                     using (SqlCommand command = new SqlCommand(string.Format(DeleteQuery, TableName), Connection))
                     {
 
