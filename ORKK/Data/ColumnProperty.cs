@@ -14,11 +14,14 @@ namespace ORKK.Data
 
         public SqlDbType DbType { get; }
 
-        public ColumnProperty(Type referenceType, string propName, string columnName, SqlDbType dbType)
+        public int Size { get; }
+
+        public ColumnProperty(Type referenceType, string propName, string columnName, SqlDbType dbType, int size = -1)
         {
             PropName = propName;
             ColumnName = columnName;
             DbType = dbType;
+            Size = size;
 
             PropInfo = referenceType.GetProperty(propName);
             if (PropInfo is null)

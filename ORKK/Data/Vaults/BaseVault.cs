@@ -216,7 +216,9 @@ namespace ORKK.Data.Vaults
                     value = DBNull.Value;
                 }
 
-                command.Parameters.AddWithValue($"@{ property.ColumnName }", value).SqlDbType = property.DbType;
+                SqlParameter param = command.Parameters.AddWithValue($"@{ property.ColumnName }", value);
+                param.SqlDbType = property.DbType;
+                param.Size = property.Size;
             }
         }
 

@@ -9,7 +9,7 @@ namespace ORKK.Data.Objects
         private DateTime dateExecution;
         private string cableSupplier;
         private string observations;
-        private object signature;
+        private byte[] signature;
         private int hoursInCompany;
         private string reasons;
 
@@ -43,7 +43,7 @@ namespace ORKK.Data.Objects
             set => Set("Observations", ref observations, value);
         }
 
-        public object Signature
+        public byte[] Signature
         {
             get => signature;
             set => Set("Signature", ref signature, value);
@@ -66,7 +66,7 @@ namespace ORKK.Data.Objects
 
         }
 
-        public OrderObject(int id, string workInstruction, DateTime dateExecution, string cableSupplier, string observations, object signature, int hoursInCompany, string reasons)
+        public OrderObject(int id, string workInstruction, DateTime dateExecution, string cableSupplier, string observations, byte[] signature, int hoursInCompany, string reasons)
         {
             ID = id;
             WorkInstruction = workInstruction;

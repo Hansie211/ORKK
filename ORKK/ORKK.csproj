@@ -56,6 +56,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Xml" />
@@ -85,6 +86,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Data\Objects\CableChecklistObject.cs" />
+    <Compile Include="Data\Objects\LineObject.cs" />
     <Compile Include="Data\Vaults\CableChecklistVault.cs" />
     <Compile Include="Data\ColumnProperty.cs" />
     <Compile Include="Data\Damage.cs" />

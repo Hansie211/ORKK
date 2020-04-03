@@ -6,6 +6,14 @@
         mc:Ignorable="d"
         Title="ORRK" Height="687" Width="800" WindowStartupLocation="CenterScreen" Closing="Window_Closing" ResizeMode="NoResize">
     <Window.Resources>
+        <Style TargetType="Canvas">
+            <EventSetter Event="MouseDown" Handler="SignatureCanvas_MouseDown"/>
+            <EventSetter Event="MouseMove" Handler="SignatureCanvas_MouseMove"/>
+            <EventSetter Event="MouseEnter" Handler="SignatureCanvas_MouseEnter"/>
+            <EventSetter Event="MouseLeave" Handler="SignatureCanvas_MouseLeave"/>
+            <Setter Property="Background" Value="#00ffffff"/>
+        </Style>
+        
         <Style x:Key="TextBlockHeaderStyle" TargetType="{x:Type TextBlock}">
             <Setter Property="TextAlignment" Value="Center" />
             <Setter Property="TextWrapping" Value="WrapWithOverflow" />
@@ -200,14 +208,14 @@
             <TextBox Grid.Row="2" Grid.Column="1" AcceptsReturn="True" TextWrapping="Wrap" Text="{Binding ActiveOrder.Observations, UpdateSourceTrigger=PropertyChanged}"/>
 
             <Border Grid.Row="0" Grid.Column="3" BorderThickness="1" BorderBrush="#FFABADB3">
-                <Canvas IsManipulationEnabled="True"  />
+                <Canvas x:Name="signatureCanvas"/>
             </Border>
             <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding ActiveOrder.HoursInCompany, UpdateSourceTrigger=PropertyChanged}" />
             <TextBox Grid.Row="2" Grid.Column="3" AcceptsReturn="True" TextWrapping="Wrap" Text="{Binding ActiveOrder.Reasons, UpdateSourceTrigger=PropertyChanged}"/>
 
         </Grid>
 
-        <Button Grid.Row="5" Height="25" Width="75" HorizontalAlignment="Right" Content="Einde" Click="CloseWindow_Click" />
+        <Button Grid.Row="5" Height="25" Width="75" HorizontalAlignment="Right" Content="Einde" Click="CloseWindow_Click" Background="#00FFFFFF"/>
 
     </Grid>
 </Window>
