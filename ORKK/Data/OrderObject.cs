@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace ORKK.Data
 {
-    public class OrderObject
+    public class OrderObject : INotifyPropertyChanged
     {
-        public bool AnyPropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 
+        private bool isChecked;
         private string workInstruction;
         private DateTime dateExecution;
         private string cableSupplier;
@@ -14,76 +17,56 @@ namespace ORKK.Data
         private int hoursInCompany;
         private string reasons;
 
+        public bool AnyPropertyChanged { get; set; }
+
         public int ID { get; set; }
+
+        public bool IsChecked 
+        {
+            get => isChecked;
+            set => Set("IsChecked", ref isChecked, value);
+        }
 
         public string WorkInstruction
         {
             get => workInstruction;
-            set
-            {
-                workInstruction = value;
-                AnyPropertyChanged = true;
-            }
+            set => Set("WorkInstruction", ref workInstruction, value);
         }
 
         public DateTime DateExecution
         {
             get => dateExecution;
-            set
-            {
-                dateExecution = value;
-                AnyPropertyChanged = true;
-            }
+            set => Set("DateExecution", ref dateExecution, value);
         }
 
         public string CableSupplier
         {
             get => cableSupplier;
-            set
-            {
-                cableSupplier = value;
-                AnyPropertyChanged = true;
-            }
+            set => Set("CableSupplier", ref cableSupplier, value);
         }
 
         public string Observations
         {
             get => observations;
-            set
-            {
-                observations = value;
-                AnyPropertyChanged = true;
-            }
+            set => Set("Observations", ref observations, value);
         }
 
         public object Signature
         {
             get => signature;
-            set
-            {
-                signature = value;
-                AnyPropertyChanged = true;
-            }
+            set => Set("Signature", ref signature, value);
         }
 
         public int HoursInCompany
         {
             get => hoursInCompany;
-            set
-            {
-                hoursInCompany = value;
-                AnyPropertyChanged = true;
-            }
+            set => Set("HoursInCompany", ref hoursInCompany, value);
         }
 
         public string Reasons
         {
             get => reasons;
-            set
-            {
-                reasons = value;
-                AnyPropertyChanged = true;
-            }
+            set => Set("Reasons", ref reasons, value);
         }
 
         public OrderObject(int id, string workInstruction, DateTime dateExecution, string cableSupplier, string observations, object signature, int hoursInCompany, string reasons)
@@ -103,6 +86,20 @@ namespace ORKK.Data
         {
             return $"Order { ID }";
         }
-    }
 
+        public void Set<T>(string propName, ref T oldValue, T newValue)
+        {
+            if (GetType().GetProperty(propName) == null)
+            {
+                throw new ArgumentException($"No property named '{propName}' on {GetType().FullName}");
+            }
+
+            if (!EqualityComparer<T>.Default.Equals(oldValue, newValue))
+            {
+                oldValue = newValue;
+                AnyPropertyChanged = true;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+            }
+        }
+    }
 }

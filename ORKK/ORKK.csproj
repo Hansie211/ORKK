@@ -84,7 +84,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Converters\IsSelectedConverter.cs" />
     <Compile Include="Data\CableChecklistObject.cs" />
     <Compile Include="Data\CableChecklistVault.cs" />
     <Compile Include="Data\DataVault.cs" />

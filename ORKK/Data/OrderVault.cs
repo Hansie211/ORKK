@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -13,7 +14,7 @@ namespace ORKK.Data
         public static readonly List<int> OrderIDs = new List<int>();
         public static readonly List<int> RemovedIDs = new List<int>();
 
-        private static readonly ObservableCollection<OrderObject> Orders = new ObservableCollection<OrderObject>();
+        private static readonly BindingList<OrderObject> Orders = new BindingList<OrderObject>();
         private static readonly SqlConnection Connection = new SqlConnection($@"Data Source=(localdb)\MSSQLLocalDB; AttachDbFilename={ Path.GetFullPath($@"{AppDomain.CurrentDomain.BaseDirectory}..\..\Main.mdf") }");
 
         public static int Count => Orders.Count;
@@ -34,7 +35,7 @@ namespace ORKK.Data
             RemovedIDs.Add(id);
         }
 
-        public static ObservableCollection<OrderObject> GetOrders()
+        public static BindingList<OrderObject> GetOrders()
         {
             return Orders;
         }

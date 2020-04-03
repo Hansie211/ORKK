@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 
 namespace ORKK.Data
@@ -16,9 +17,9 @@ namespace ORKK.Data
             return OrderVault.GetOrder(CableChecklistVault.GetCableChecklist(cableChecklistId).OrderID);
         }
 
-        public static ObservableCollection<CableChecklistObject> GetChildCableChecklists(int orderId)
+        public static BindingList<CableChecklistObject> GetChildCableChecklists(int orderId)
         {
-            return new ObservableCollection<CableChecklistObject>(CableChecklistVault.GetCableChecklists().Where(x => x.OrderID == orderId));
+            return new BindingList<CableChecklistObject>(CableChecklistVault.GetCableChecklists().Where(x => x.OrderID == orderId).ToList());
         }
     }
 }
