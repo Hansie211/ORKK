@@ -1,46 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ORKK.Data {
-    public abstract class BaseVault<T> where T : DatabaseVaultObject {
+namespace ORKK.Data
+{
+    public abstract class BaseVault<T> where T : DatabaseVaultObject
+    {
+        protected readonly Type ObjectType = typeof(T);
+        protected ColumnProperty[] propList;
+        protected ColumnProperty propID;
 
-        protected static readonly SqlConnection Connection = new SqlConnection($@"Data Source=(localdb)\MSSQLLocalDB; AttachDbFilename={ Path.GetFullPath($@"{AppDomain.CurrentDomain.BaseDirectory}..\..\Main.mdf") }");
-
-        public readonly List<int> StoredIDs  = new List<int>();
-        public readonly List<int> RemovedIDs = new List<int>();
-
+        private static readonly SqlConnection Connection = new SqlConnection($@"Data Source=(localdb)\MSSQLLocalDB; AttachDbFilename={ Path.GetFullPath($@"{AppDomain.CurrentDomain.BaseDirectory}..\..\Main.mdf") }");
+        private readonly List<int> StoredIDs = new List<int>();
+        private readonly List<int> RemovedIDs = new List<int>();
         private readonly string TableName;
         private readonly string InsertQuery;
         private readonly string UpdateQuery;
         private readonly string DeleteQuery;
-
-        protected readonly Type ObjectType = typeof(T);
-        protected ColumnProperty[] propList;
-        protected ColumnProperty propID;
-        protected abstract void InitializePropList();
-
         private int lastID;
 
-        public int NextID() {
+        protected abstract void InitializePropList();
+
+        public int NextID()
+        {
             return ++lastID;
         }
 
-        public IList<T> Entries { get; } = new List<T>();
-        public int Count { get => Entries.Count; }
+        public BindingList<T> Entries { get; }
 
-        public BaseVault() {
+        public int Count 
+        { 
+            get => Entries.Count; 
+        }
 
-            TableNameAttribute attribute = (TableNameAttribute)Attribute.GetCustomAttribute( GetType(), typeof(TableNameAttribute) );
+        public BaseVault()
+        {
+            Entries = new BindingList<T>();
 
-            if ( attribute is null ) {
-
-                throw new MissingFieldException( $"Missing 'TableName' attribute for { GetType() }." );
+            TableNameAttribute attribute = (TableNameAttribute)Attribute.GetCustomAttribute(GetType(), typeof(TableNameAttribute));
+            if (attribute is null)
+            {
+                throw new MissingFieldException($"Missing 'TableName' attribute for { GetType() }.");
             }
 
             TableName = attribute.Value;
@@ -48,84 +51,91 @@ namespace ORKK.Data {
             InitializePropList();
 
             // Generate the queries
-            IEnumerable<string> allColumns  = propList.Where( x => (x.ColumnName != propID.ColumnName) ).Select( x => x.ColumnName );
-            IEnumerable<string> allValues   = propList.Where( x => (x.ColumnName != propID.ColumnName) ).Select( x => $"{ x.ColumnName } = @{ x.ColumnName }");
+            IEnumerable<string> allColumns = propList.Where(x => x.ColumnName != propID.ColumnName).Select(x => x.ColumnName);
+            IEnumerable<string> allValues = propList.Where(x => x.ColumnName != propID.ColumnName).Select(x => $"{ x.ColumnName } = @{ x.ColumnName }");
 
-            InsertQuery = $@"INSERT INTO { TableName } ({ string.Join( ", ", allColumns ) }) VALUES (@{ string.Join( ", @", allColumns )})";
-            UpdateQuery = $@"UPDATE { TableName } SET { string.Join( ", ", allValues ) } WHERE { propID.ColumnName } = @{ propID.ColumnName }";
+            InsertQuery = $@"INSERT INTO { TableName } ({ string.Join(", ", allColumns) }) VALUES (@{ string.Join(", @", allColumns)})";
+            UpdateQuery = $@"UPDATE { TableName } SET { string.Join(", ", allValues) } WHERE { propID.ColumnName } = @{ propID.ColumnName }";
             DeleteQuery = $@"DELETE FROM { TableName } WHERE { propID.ColumnName } = @{ propID.ColumnName }";
         }
 
-        public T GetEntry( int id ) {
-            return Entries.FirstOrDefault( x => x.ID == id );
+        public T GetEntry(int id)
+        {
+            return Entries.FirstOrDefault(x => x.ID == id);
         }
 
-        public void AddEntry( T entry ) {
-            Entries.Add( entry );
+        public void AddEntry(T entry)
+        {
+            Entries.Add(entry);
         }
 
-        public void RemoveEntry( int id ) {
-            Entries.Remove( GetEntry( id ) );
-            RemovedIDs.Add( id );
+        public void RemoveEntry(int id)
+        {
+            Entries.Remove(GetEntry(id));
+            RemovedIDs.Add(id);
         }
 
-        public void FillVaultFromDB() {
-
+        public void FillVaultFromDB()
+        {
             Connection.Open();
-            try {
-
-                using ( var command = new SqlCommand( $@"SELECT * FROM { TableName }", Connection ) ) {
-
+            try
+            {
+                using (var command = new SqlCommand($@"SELECT * FROM { TableName }", Connection))
+                {
                     SqlDataReader reader = command.ExecuteReader();
-                    while ( reader.Read() ) {
-
-                        T entry = FromDatabase( reader );
-
-                        Entries.Add( entry );
-                        StoredIDs.Add( entry.ID );
+                    while (reader.Read())
+                    {
+                        T entry = FromDatabase(reader);
+                        Entries.Add(entry);
+                        StoredIDs.Add(entry.ID);
                     }
 
                     reader.Close();
                 }
-
-            } finally {
+            }
+            finally
+            {
                 Connection.Close();
             }
 
             lastID = GetLastIDFromDB();
         }
 
-        public void SyncDBFromVault( bool checkDirty = true ) {
-
-            if ( ( checkDirty ) && ( !IsDirty() ) ) {
-
+        public void SyncDBFromVault(bool checkDirty = true)
+        {
+            if (checkDirty && (!IsDirty()))
+            {
                 return;
             }
 
             Connection.Open();
-            try {
+            try
+            {
+                foreach (T entry in Entries)
+                {
+                    if (!StoredIDs.Contains(entry.ID))
+                    {
+                        using (SqlCommand command = new SqlCommand(string.Format(InsertQuery, TableName), Connection))
+                        {
 
-                foreach ( T entry in Entries ) {
-
-                    if ( !StoredIDs.Contains( entry.ID ) ) {
-
-                        using ( SqlCommand command = new SqlCommand( string.Format( InsertQuery, TableName ), Connection ) ) {
-
-                            FillCommand( command, entry );
+                            FillCommand(command, entry);
                             command.ExecuteNonQuery();
 
-                            StoredIDs.Add( entry.ID );
+                            StoredIDs.Add(entry.ID);
                         }
-                    } else {
-
-                        if ( !entry.AnyPropertyChanged ) {
+                    }
+                    else
+                    {
+                        if (!entry.AnyPropertyChanged)
+                        {
 
                             continue;
                         }
 
-                        using ( SqlCommand command = new SqlCommand( string.Format( UpdateQuery, TableName ), Connection ) ) {
+                        using (SqlCommand command = new SqlCommand(string.Format(UpdateQuery, TableName), Connection))
+                        {
 
-                            FillCommand( command, entry );
+                            FillCommand(command, entry);
                             command.ExecuteNonQuery();
                         }
                     }
@@ -133,89 +143,42 @@ namespace ORKK.Data {
                     entry.AnyPropertyChanged = false;
                 }
 
-                foreach ( int id in RemovedIDs ) {
+                foreach (int id in RemovedIDs)
+                {
 
-                    using ( SqlCommand command = new SqlCommand( string.Format( DeleteQuery, TableName ), Connection ) ) {
+                    using (SqlCommand command = new SqlCommand(string.Format(DeleteQuery, TableName), Connection))
+                    {
 
-                        FillCommand( command, id );
+                        FillCommand(command, id);
                         command.ExecuteNonQuery();
 
-                        RemovedIDs.Remove( id );
+                        RemovedIDs.Remove(id);
                     }
                 }
-
-            } finally {
+            }
+            finally
+            {
 
                 Connection.Close();
             }
-
         }
+        public bool IsDirty()
+        {
 
-        private int GetLastIDFromDB() {
-
-            Connection.Open();
-            try {
-
-                using ( var command = new SqlCommand( $@"SELECT IDENT_CURRENT ('{ TableName }')", Connection ) ) {
-                    var ID = command.ExecuteScalar();
-                    return ID is DBNull ? -1 : Convert.ToInt32( ID );
-                }
-
-            } finally {
-                Connection.Close();
-            }
-        }
-        protected void FillCommand( SqlCommand command, T entry ) {
-
-            foreach ( ColumnProperty property in propList ) {
-
-                object value = property.PropInfo.GetValue( entry );
-                if ( value is null ) {
-                    value = DBNull.Value;
-                }
-
-                command.Parameters.AddWithValue( $"@{ property.ColumnName }", value ).SqlDbType = property.DbType;
-            }
-        }
-
-        protected void FillCommand( SqlCommand command, int id ) {
-
-            command.Parameters.AddWithValue( $"@{ propID.ColumnName }", id );
-        }
-
-        protected T FromDatabase( SqlDataReader reader ) {
-
-            T result = (T)Activator.CreateInstance( typeof(T) );
-
-            foreach ( ColumnProperty property in propList ) {
-
-                object value = reader[ property.ColumnName ];
-                if ( value is DBNull ) {
-                    value = null;
-                }
-
-                property.PropInfo.SetValue( result, value );
-            }
-
-            result.AnyPropertyChanged = false;
-
-            return result;
-        }
-
-        public bool IsDirty() {
-
-            if ( RemovedIDs.Any() ) {
+            if (RemovedIDs.Any())
+            {
                 return true;
             }
 
-            foreach ( T entry in Entries ) {
-
-                if ( entry.AnyPropertyChanged ) {
+            foreach (T entry in Entries)
+            {
+                if (entry.AnyPropertyChanged)
+                {
                     return true;
                 }
 
-                if ( !StoredIDs.Contains( entry.ID ) ) {
-
+                if (!StoredIDs.Contains(entry.ID))
+                {
                     return true;
                 }
             }
@@ -223,5 +186,60 @@ namespace ORKK.Data {
             return false;
         }
 
+        private int GetLastIDFromDB()
+        {
+            Connection.Open();
+            try
+            {
+
+                using (var command = new SqlCommand($@"SELECT IDENT_CURRENT ('{ TableName }')", Connection))
+                {
+                    var ID = command.ExecuteScalar();
+                    return ID is DBNull ? -1 : Convert.ToInt32(ID);
+                }
+
+            }
+            finally
+            {
+                Connection.Close();
+            }
+        }
+
+        private void FillCommand(SqlCommand command, T entry)
+        {
+            foreach (ColumnProperty property in propList)
+            {
+                object value = property.PropInfo.GetValue(entry);
+                if (value is null)
+                {
+                    value = DBNull.Value;
+                }
+
+                command.Parameters.AddWithValue($"@{ property.ColumnName }", value).SqlDbType = property.DbType;
+            }
+        }
+
+        private void FillCommand(SqlCommand command, int id)
+        {
+            command.Parameters.AddWithValue($"@{ propID.ColumnName }", id);
+        }
+
+        private T FromDatabase(SqlDataReader reader)
+        {
+            T result = (T)Activator.CreateInstance(typeof(T));
+            foreach (ColumnProperty property in propList)
+            {
+                object value = reader[property.ColumnName];
+                if (value is DBNull)
+                {
+                    value = null;
+                }
+
+                property.PropInfo.SetValue(result, value);
+            }
+
+            result.AnyPropertyChanged = false;
+            return result;
+        }
     }
 }

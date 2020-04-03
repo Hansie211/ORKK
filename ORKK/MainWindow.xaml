@@ -200,7 +200,7 @@
             <TextBox Grid.Row="2" Grid.Column="1" AcceptsReturn="True" TextWrapping="Wrap" Text="{Binding ActiveOrder.Observations, UpdateSourceTrigger=PropertyChanged}"/>
 
             <Border Grid.Row="0" Grid.Column="3" BorderThickness="1" BorderBrush="#FFABADB3">
-                <Canvas ManipulationStarted="Canvas_ManipulationStarted" IsManipulationEnabled="True"  />
+                <Canvas IsManipulationEnabled="True"  />
             </Border>
             <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding ActiveOrder.HoursInCompany, UpdateSourceTrigger=PropertyChanged}" />
             <TextBox Grid.Row="2" Grid.Column="3" AcceptsReturn="True" TextWrapping="Wrap" Text="{Binding ActiveOrder.Reasons, UpdateSourceTrigger=PropertyChanged}"/>

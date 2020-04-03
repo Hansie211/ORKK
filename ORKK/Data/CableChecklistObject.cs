@@ -1,16 +1,7 @@
-﻿using System.Data.SqlClient;
-
-namespace ORKK.Data {
-
-    public enum Damage {
-        Geen,
-        Laag,
-        Gemiddeld,
-        Hoog,
-    }
-
-    public class CableChecklistObject : DatabaseVaultObject {
-
+﻿namespace ORKK.Data
+{
+    public class CableChecklistObject : DatabaseVaultObject
+    {
         private int rupture6D;
         private int rupture30D;
         private Damage damageOutside;
@@ -22,75 +13,61 @@ namespace ORKK.Data {
 
         public int OrderID { get; set; }
 
-        public int Rupture6D {
+        public int Rupture6D
+        {
             get => rupture6D;
-            set {
-                rupture6D = value;
-                AnyPropertyChanged = true;
-            }
+            set => Set("Rupture6D", ref rupture6D, value);
         }
 
-        public int Rupture30D {
+        public int Rupture30D
+        {
             get => rupture30D;
-            set {
-                rupture30D = value;
-                AnyPropertyChanged = true;
-            }
+            set => Set("Rupture30D", ref rupture30D, value);
         }
 
-        public Damage DamageOutside {
+        public Damage DamageOutside
+        {
             get => damageOutside;
-            set {
-                damageOutside = value;
-                AnyPropertyChanged = true;
-            }
+            set => Set("DamageOutside", ref damageOutside, value);
         }
 
-        public Damage DamageRustCorrosion {
+        public Damage DamageRustCorrosion
+        {
             get => damageRustCorrosion;
-            set {
-                damageRustCorrosion = value;
-                AnyPropertyChanged = true;
-            }
+            set => Set("DamageRustCorrosion", ref damageRustCorrosion, value);
         }
 
-        public int ReducedCableDiameter {
+        public int ReducedCableDiameter
+        {
             get => reducedCableDiameter;
-            set {
-                reducedCableDiameter = value;
-                AnyPropertyChanged = true;
-            }
+            set => Set("ReducedCableDiameter", ref reducedCableDiameter, value);
         }
 
-        public int PositionMeasuringPoints {
+        public int PositionMeasuringPoints
+        {
             get => positionMeasuringPoints;
-            set {
-                positionMeasuringPoints = value;
-                AnyPropertyChanged = true;
-            }
+            set => Set("PositionMeasuringPoints", ref positionMeasuringPoints, value);
         }
 
-        public Damage TotalDamages {
+        public Damage TotalDamages
+        {
             get => totalDamages;
-            set {
-                totalDamages = value;
-                AnyPropertyChanged = true;
-            }
+            set => Set("TotalDamages", ref totalDamages, value);
         }
 
-        public int TypeDamageRust {
+        public int TypeDamageRust
+        {
             get => typeDamageRust;
-            set {
-                typeDamageRust = value;
-                AnyPropertyChanged = true;
-            }
+            set => Set("TypeDamageRust", ref typeDamageRust, value);
         }
 
-        public CableChecklistObject() {
+        public CableChecklistObject()
+        {
 
         }
 
-        public CableChecklistObject( int id, int orderId, int rupture6D, int rupture30D, Damage damageOutside, Damage damageRustCorrosion, int reducedCableDiamater, int positionMeasuringPoints, Damage totalDamages, int typeDamageRust ) {
+        public CableChecklistObject(int id, int orderId, int rupture6D, int rupture30D, Damage damageOutside, Damage damageRustCorrosion, int reducedCableDiamater, int positionMeasuringPoints, Damage totalDamages, int typeDamageRust)
+        {
             ID = id;
             OrderID = orderId;
             Rupture6D = rupture6D;
@@ -101,9 +78,7 @@ namespace ORKK.Data {
             PositionMeasuringPoints = positionMeasuringPoints;
             TotalDamages = totalDamages;
             TypeDamageRust = typeDamageRust;
-
             AnyPropertyChanged = false;
         }
-
     }
 }

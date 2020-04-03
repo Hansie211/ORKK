@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace ORKK.Data
 {
-    public class OrderObject : INotifyPropertyChanged
+    public class OrderObject : DatabaseVaultObject
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
         private bool isChecked;
         private string workInstruction;
         private DateTime dateExecution;
@@ -16,10 +13,6 @@ namespace ORKK.Data
         private object signature;
         private int hoursInCompany;
         private string reasons;
-
-        public bool AnyPropertyChanged { get; set; }
-
-        public int ID { get; set; }
 
         public bool IsChecked 
         {
@@ -69,6 +62,11 @@ namespace ORKK.Data
             set => Set("Reasons", ref reasons, value);
         }
 
+        public OrderObject()
+        {
+
+        }
+
         public OrderObject(int id, string workInstruction, DateTime dateExecution, string cableSupplier, string observations, object signature, int hoursInCompany, string reasons)
         {
             ID = id;
@@ -85,21 +83,6 @@ namespace ORKK.Data
         public override string ToString()
         {
             return $"Order { ID }";
-        }
-
-        public void Set<T>(string propName, ref T oldValue, T newValue)
-        {
-            if (GetType().GetProperty(propName) == null)
-            {
-                throw new ArgumentException($"No property named '{propName}' on {GetType().FullName}");
-            }
-
-            if (!EqualityComparer<T>.Default.Equals(oldValue, newValue))
-            {
-                oldValue = newValue;
-                AnyPropertyChanged = true;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
-            }
         }
     }
 }

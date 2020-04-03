@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data;
-using System.Data.SqlClient;
-using System.IO;
-using System.Linq;
+﻿using System.Data;
 
-namespace ORKK.Data {
-
-    [TableName( "OrderTable" )]
-    public class OrderVault : BaseVault<OrderObject> {
-
-        protected override void InitializePropList() {
-
-            propList = new ColumnProperty[] {
-
+namespace ORKK.Data
+{
+    [TableName("OrderTable")]
+    public class OrderVault : BaseVault<OrderObject>
+    {
+        protected override void InitializePropList()
+        {
+            propList = new ColumnProperty[]
+            {
                 propID = new ColumnProperty( ObjectType, "ID", "Order_ID",  SqlDbType.Int),
                 new ColumnProperty( ObjectType, "WorkInstruction", "Work_Instruction",  SqlDbType.NVarChar ),
                 new ColumnProperty( ObjectType, "DateExecution", "Date_Execution",  SqlDbType.DateTime ),
