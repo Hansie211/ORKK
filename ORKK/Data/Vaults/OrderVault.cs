@@ -1,13 +1,12 @@
 ﻿using ORKK.Data.Objects;
 using System.Data;
+using System.Windows.Data;
 
 namespace ORKK.Data.Vaults
 {
     [TableName("OrderTable")]
-    public class OrderVault : BaseVault<OrderObject>
-    {
-        protected override void InitializePropList()
-        {
+    public class OrderVault : BaseVault<OrderObject> {
+        protected override void InitializePropList(){
             propList = new ColumnProperty[]
             {
                 propID = new ColumnProperty( ObjectType, "ID", "Order_ID",  SqlDbType.Int),
